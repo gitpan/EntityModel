@@ -1,3 +1,13 @@
+0.002     2011-02-06 00:31:18 Europe/London
+	Improve tests and handling for N:M join tables.
+	Enable handling for ->find in the Perl 'storage' module.
+	Copy across the missing update support for EntityModel::Query.
+	Allow fields that don't have an EntityModel::Field definition (and corresponding type).
+	Initial support for callback events on entities at EntityModel::Support::Perl level.
+	Fix some pod doc headers.
+	Do EntityModel load in general.t inside a BEGIN block in an attempt to trace why usemultiplicity
+	seems to be required for UNITCHECK blocks to work as required.
+
 0.001     2011-02-01 04:38:41 Europe/London
 	Preliminary release to CPAN.
 

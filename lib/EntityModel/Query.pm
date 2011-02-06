@@ -1,6 +1,6 @@
 package EntityModel::Query;
 BEGIN {
-  $EntityModel::Query::VERSION = '0.001'; # TRIAL
+  $EntityModel::Query::VERSION = '0.002'; # TRIAL
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Query::Base}],
@@ -24,7 +24,7 @@ EntityModel::Query - handle SQL queries
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -75,6 +75,7 @@ use EntityModel::Query::Delete;
 use EntityModel::Query::FromTable;
 use EntityModel::Query::Field;
 use EntityModel::Query::InsertField;
+use EntityModel::Query::UpdateField;
 use EntityModel::Query::OrderField;
 use EntityModel::Query::Join;
 

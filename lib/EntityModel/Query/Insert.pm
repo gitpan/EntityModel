@@ -1,6 +1,6 @@
 package EntityModel::Query::Insert;
 BEGIN {
-  $EntityModel::Query::Insert::VERSION = '0.001'; # TRIAL
+  $EntityModel::Query::Insert::VERSION = '0.002'; # TRIAL
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query}],
@@ -9,11 +9,11 @@ use EntityModel::Class {
 
 =head1 NAME
 
-EntityModel::Query::Update
+EntityModel::Query::Insert
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -63,6 +63,26 @@ Populate the values for the insert statement.
 =cut
 
 sub parse_values {
+	my $self = shift;
+	my $spec = shift;
+	foreach my $k (keys %$spec) {
+		$self->parse_base({
+				name => $k,
+				value => $spec->{$k},
+			},
+			method => 'values',
+			type => 'EntityModel::Query::InsertField'
+		);
+	}
+}
+
+=head2 parse_fields
+
+Populate the values for the insert statement.
+
+=cut
+
+sub parse_fields {
 	my $self = shift;
 	my $spec = shift;
 	foreach my $k (keys %$spec) {

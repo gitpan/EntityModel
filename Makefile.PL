@@ -30,7 +30,7 @@ my %WriteMakefileArgs = (
     'EntityModel::Log' => '0.001',
     'Module::Load' => '0'
   },
-  'VERSION' => '0.001',
+  'VERSION' => '0.002',
   'test' => {
     'TESTS' => 't/*.t'
   }

@@ -1,6 +1,6 @@
 package EntityModel::Storage::Perl;
 BEGIN {
-  $EntityModel::Storage::Perl::VERSION = '0.001'; # TRIAL
+  $EntityModel::Storage::Perl::VERSION = '0.002'; # TRIAL
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage}],
@@ -14,7 +14,7 @@ EntityModel::Storage::Perl - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -29,6 +29,8 @@ testing, providing an ephemeral backing store for entities which will disappear 
 termination.
 
 =cut
+
+use List::MoreUtils qw(all);
 
 # Used for holding any entities that have been created
 my %EntityMap;
@@ -222,7 +224,7 @@ sub create {
 	$args{id} = $id;
 	$args{data} = {
 		%{$args{data}},
-		id => $id
+		$args{entity}->primary => $id
 	};
 	$self->store(%args);
 	return $id;
@@ -281,9 +283,16 @@ sub remove {
 =cut
 
 sub find {
-	my $self = shift;
 	my $class = shift;
-	die "Virtual!";
+	my %args = @_;
+
+	my @rslt;
+	ENTRY:
+	foreach my $entry (values %{$EntityMap{$args{entity}->name}->{store}}) {
+		next ENTRY unless all { $entry->{$_} ~~ $args{data}->{$_} } keys %{$args{data}};
+		push @rslt, $entry;
+	}
+	return @rslt;
 }
 
 =head2 adjacent
@@ -323,6 +332,12 @@ sub outer {
 	my $first = shift @entries;
 	my $last = pop @entries;
 	return ($first, $last);
+}
+
+sub dump {
+	my $self = shift;
+	use Data::Dumper;
+	warn Dumper \%EntityMap;
 }
 
 1;

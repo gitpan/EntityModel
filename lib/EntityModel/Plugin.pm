@@ -1,6 +1,6 @@
 package EntityModel::Plugin;
 BEGIN {
-  $EntityModel::Plugin::VERSION = '0.001'; # TRIAL
+  $EntityModel::Plugin::VERSION = '0.002'; # TRIAL
 }
 sub import; # forward ref due to the way the class is set up
 use EntityModel::Class {
@@ -13,7 +13,7 @@ EntityModel::Plugin - base class for plugin handling
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 

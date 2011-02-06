@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl::Base;
 BEGIN {
-  $EntityModel::Support::Perl::Base::VERSION = '0.001'; # TRIAL
+  $EntityModel::Support::Perl::Base::VERSION = '0.002'; # TRIAL
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support::Perl::Base - base class for entity instances
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -32,25 +32,94 @@ use Tie::Cache::LRU;
 
 Instantiate from an ID or a pre-fabricated object (hashref).
 
+=over 4
+
+=item * Create a new, empty object:
+
+ EntityModel::Support::Perl::Base->new(1)
+
+=item * Instantiate from ID:
+
+ EntityModel::Support::Perl::Base->new(1)
+ EntityModel::Support::Perl::Base->new('123-456')
+ EntityModel::Support::Perl::Base->new([123,456])
+
+=item * Create an object and assign initial values:
+
+ EntityModel::Support::Perl::Base->new({ x => 1, y => 2 })
+
+=back
+
+Any remaining options indicate callbacks:
+
+=over 4
+
+=item * before_commit - just before commit
+
+=item * after_commit - after this has been committed to the database
+
+=item * on_load - when the data has been read from storage
+
+=item * on_not_found - when storage reports that this item is not found
+
+=back
+
+The before_XXX callbacks are also aliased to on_XXX for convenience.
+
 =cut
 
 sub new {
 	my $class = shift;
 	my $spec = shift || {};
-	my $self;
-	if(ref $spec eq 'HASH') {
-		$self = $class->_spec_from_hashref($spec);
-	} elsif(!@_ || ref $spec eq 'ARRAY') {
-		$self = $class->_storage->read(
+	my %args = @_;
+
+	my %opt;
+	my $self = bless {}, $class;
+
+# Now we might want to provide some callbacks
+	while(my ($k, $v) = each %args) {
+		if($k eq 'create') {
+			$opt{create} = $v ? 1 : 0;
+		} elsif($k ~~ $class->_supported_callbacks) {
+			$self->{_callback}->{$k} = $v;
+		} else {
+			die "Unknown callback $k requested";
+		}
+	}
+
+# An arrayref or plain value is used as an ID 
+	if(!ref($spec) || ref($spec) eq 'ARRAY') {
+		my $data = $class->_storage->read(
 			entity	=> $class->_entity,
 			id	=> $spec
-		) or return EntityModel::Error->new('Could not instantiate');
-	} else {
-		$self = $class->_spec_from_hashref({ $spec, @_ });
+		);
+		unless($data) {
+			$self->_event('on_not_found');
+			return EntityModel::Error->new('Could not instantiate');
+		}
+		$self->{$_} = $data->{$_} for keys %$data;
+		$self->_event('on_load');
+# A hashref (possibly empty) means we create a new object with the given values
+	} elsif(ref($spec) eq 'HASH') {
+		my $data = $class->_spec_from_hashref($spec);
+		$self->{$_} = $data->{$_} for keys %$data;
+		$self->{ _insert_required } = 1 if $opt{create};
 	}
-	$self ||= {};
+	return $self;
+}
 
-	bless $self, $class;
+=head2 _event
+
+Pass the given event through to any defined callbacks.
+
+=cut
+
+sub _event {
+	my $self = shift;
+	my $ev = shift;
+	$self->{_callback}->{$ev}->(@_) if exists $self->{_callback}->{$ev};
+# also alias before_XXX to on_XXX
+	$self->{_callback}->{"on_$1"}->(@_) if $ev =~ /^before_(.*)$/ && exists $self->{_callback}->{"on_$1"};
 	return $self;
 }
 
@@ -73,6 +142,7 @@ sub _spec_from_hashref {
 		} else {
 			$details{$k} = $spec->{$k};
 		}
+		$details{id} = $spec->{$k} if $k eq $class->_entity->primary;
 	}
 	return \%details;
 }
@@ -87,64 +157,25 @@ Takes a hashref, and sets the flag so that ->commit does the insert.
 
 sub create {
 	my $class = shift;
-	my $self = $class->new(@_);
-	$self->{ _insert_required } = 1;
+	my $self = $class->new(@_, create => 1);
 	return $self;
-}
-
-=head2 find
-
-Search for entities that match the given spec.
-
-Generates a query from the spec, and uses that to locate any matching objects, instantiating them as required.
-
-=over 4
-
-=item * $spec - hashref (or plain hash) of search options
-
-=back
-
-Example:
-
- Entity::Thing->find(
- 	name => 'test'
- );
-
-TODO Not yet supported
-
-=cut
-
-sub _find_query {
-	my $class = shift;
-	my $spec = shift;
-	my $opt = shift || [ ];
-
-# Normalise the options if we had any
-	$opt = [ %$opt ] if ref $opt eq 'HASH';
-	$opt = [ $opt ] unless ref $opt eq 'ARRAY';
-
-#	my $q = EntityModel::Query->new(
-#		select	=> [ $class->_entity->field->list ],
-#		from	=> $class->_entity,
-#		  $spec
-#		? (where	=> $spec)
-#		: (),
-#		@$opt
-#	);
-#
-#	logDebug($q->sqlString);
-	return;
 }
 
 sub find {
 	my $class = shift;
-	my $q = $class->_find_query(@_) or return;
-	my @rslt = $q->results();
-	return unless @rslt;
+	my $args = shift;
 
-# Pass error back up if we get one
-	return @rslt if eval { $rslt[0]->isa('EntityModel::Error'); };
-	return grep { $_ } map { $class->new($_) } @rslt;
+	my %spec = %$args;
+
+# Convert refs to IDs
+	foreach my $k (keys %spec) {
+		$spec{"id$k"} = delete($spec{$k})->id if eval { $spec{$k}->isa(__PACKAGE__); };
+	}
+
+	return map { $class->new($_) } $class->_storage->find(
+		entity	=> $class->_entity,
+		data	=> \%spec,
+	);
 }
 
 sub iterate {
@@ -178,7 +209,7 @@ sub _update {
 	my $primary = $self->_entity->primary;
 	$self->_storage->store(
 		entity	=> $self->_entity,
-		id	=> $self->$primary,
+		id	=> $self->id,
 		data	=> $self->_extract_data
 	);
 	return $self;
@@ -199,7 +230,7 @@ sub _select {
 
 	my $data = $self->_storage->read(
 		entity	=> $self->_entity,
-		id	=> $self->$primary,
+		id	=> $self->id,
 	) or return EntityModel::Error->new("Failed to read");
 	$self->{$_} = $data->{$_} for keys %$data;
 	return $self;
@@ -238,6 +269,7 @@ sub _insert {
 		entity	=> $self->_entity,
 		data	=> $self->_extract_data,
 	);
+	#warn "Had ID $id for $self";
 	$self->{id} = $id;
 	delete $self->{_insert_required};
 	return $self;
@@ -287,6 +319,7 @@ sub id {
 		return $self;
 	}
 	return $self->{id} if exists $self->{id};
+	logError({%$self});
 #	logDebug("Expect from " . $_) foreach $self->_entity->list_primary;
 	$self->{id} = join('-', map { $self->{$_} // 'undef' } $self->_entity->primary);
 	$self->{$_} = $self->{id} foreach $self->_entity->primary;

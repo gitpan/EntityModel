@@ -1,6 +1,6 @@
-package EntityModel::Query::InsertField;
+package EntityModel::Query::UpdateField;
 BEGIN {
-  $EntityModel::Query::InsertField::VERSION = '0.002'; # TRIAL
+  $EntityModel::Query::UpdateField::VERSION = '0.002'; # TRIAL
 }
 use EntityModel::Class {
 	'_isa' => [qw(EntityModel::Query::Field)],
@@ -9,7 +9,7 @@ use EntityModel::Class {
 
 =head1 NAME
 
-EntityModel::Query::InsertField
+EntityModel::Query::UpdateField
 
 =head1 VERSION
 

@@ -1,6 +1,6 @@
 package EntityModel::Transaction;
 BEGIN {
-  $EntityModel::Transaction::VERSION = '0.001'; # TRIAL
+  $EntityModel::Transaction::VERSION = '0.002'; # TRIAL
 }
 use Scalar::Util qw(refaddr);
 use EntityModel::Class {
@@ -13,7 +13,7 @@ EntityModel::Transaction - transaction co-ordinator
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 

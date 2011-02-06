@@ -43,8 +43,8 @@ lib/EntityModel/Query/Table.pm
 lib/EntityModel/Query/Union.pm
 lib/EntityModel/Query/UnionAll.pm
 lib/EntityModel/Query/Update.pm
+lib/EntityModel/Query/UpdateField.pm
 lib/EntityModel/Storage.pm
-lib/EntityModel/Storage/MySQL.pm
 lib/EntityModel/Storage/Perl.pm
 lib/EntityModel/Support.pm
 lib/EntityModel/Support/CPP.pm

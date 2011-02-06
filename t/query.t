@@ -122,6 +122,21 @@ my @cases = (
 			'returning'	=> [ 'id' ],
 		]
 	},
+# Update
+	q{update table set something = 3, other = 'test' where id = 2} => {
+		prepared => q{update table set something = ?, other = ? where id = ?},
+		parameters => [3, 'test', 2],
+		query => [
+			'update'	=> 'table',
+			fields		=> [
+				something	=> 3,
+				other		=> 'test',
+			],
+			where		=> [
+				id	=> 2
+			]
+		]
+	},
 );
 plan tests => 6 * (scalar(@cases) / 2);
 

@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl;
 BEGIN {
-  $EntityModel::Support::Perl::VERSION = '0.001'; # TRIAL
+  $EntityModel::Support::Perl::VERSION = '0.002'; # TRIAL
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Support}],
@@ -15,7 +15,7 @@ EntityModel::Support::Perl - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -65,8 +65,83 @@ sub apply_entity {
 	my $entity = shift;
 
 	logDebug("Create table " . $entity->name);
-	$self->load_package($self->package_name($entity->name), $entity);
+	$self->load_package($self->package_name($entity) => $entity);
 	$self->create_field($entity, $_) foreach $entity->field->list;
+
+# With 3 references, we currently don't really know what to do, so bail out for now
+	my @ref = grep { $_->refer } $entity->field->list;
+	die "Too many references to handle" if @ref > 2;
+
+# Create a back collection for each reference
+	foreach (@ref) {
+		my $r = $_->refer->entity;
+		my $f = $r->field_map->{$_->refer->field} or die "no field found";
+		$self->back_link(
+			src => {
+				entity	=> $r,
+				field	=> $f
+			},
+			dst => {
+				entity	=> $entity,
+				field	=> $_
+			}
+		);
+	}
+
+# 2 references usually means we have an N:M relationship, so create 2-way collections
+	if(@ref == 2) {
+		my $src = {
+			entity	=> $ref[0]->refer->entity,
+			field	=> $ref[0]->refer->entity->field_map->{$ref[0]->refer->field},
+		};
+		my $dst = {
+			entity	=> $ref[1]->refer->entity,
+			field	=> $ref[1]->refer->entity->field_map->{$ref[1]->refer->field},
+		};
+		$self->cross_link(join_table => $entity, src => $src, dst => $dst);
+		$self->cross_link(join_table => $entity, src => $dst, dst => $src);
+	}
+
+	return $self;
+}
+
+sub back_link {
+	my $self = shift;
+	my %args = @_;
+
+# Need to make method on the source entity which does a ->find on the destination
+	my $pkg = $self->package_name($args{src}->{entity});
+	my $method = $args{dst}->{entity}->name;
+	my $target = $self->package_name($args{dst}->{entity});
+	my $search_field = $args{dst}->{field}->name;
+	my $code = sub {
+		my $self = shift;
+		EntityModel::Array->new([ $target->find({ $search_field => $self->id }) ]);
+	};
+	my $sym = join('::', $pkg, $method);
+	{ no strict 'refs'; *$sym = $code unless eval { $pkg->can($sym) }; }
+	return $self;
+}
+
+sub cross_link {
+	my $self = shift;
+	my %args = @_;
+
+# Need to make method on the source entity which does a ->find on the destination
+	my $pkg = $self->package_name($args{src}->{entity});
+	my $method = $args{dst}->{entity}->name;
+	my $target = $self->package_name($args{dst}->{entity});
+	my $search_field = $args{src}->{field}->name;
+	my $pri = $args{dst}->{field}->name;
+	my $join = $self->package_name($args{join_table});
+	my $code = sub {
+		my $self = shift;
+		EntityModel::Array->new([
+			map { $target->new($_->$pri) } $join->find({ $search_field => $self->id })
+		]);
+	};
+	my $sym = join('::', $pkg, $method);
+	{ no strict 'refs'; *$sym = $code unless eval { $pkg->can($sym) }; }
 	return $self;
 }
 
@@ -83,25 +158,26 @@ sub ensure_loaded {
 
 =head2 package_name
 
-Generate the package name string from the given entity name.
+Generate the package name string from the given entity.
 
 =cut
 
 sub package_name {
 	my ($self, $entity) = @_;
 	logStack("No entity?") unless $entity; # don't think this should ever happen but if it's really a fault other stuff will break anyway!
+	my $name = ref($entity) ? $entity->name : $entity;
 
-	logDebug("Get package name for [%s] with namespace [%s]", $entity, $self->namespace);
+	logDebug("Get package name for [%s] with namespace [%s]", $name, $self->namespace);
 	return $self->namespace unless $entity;
 
 	return join('::', $self->namespace, map {
 		ucfirst($_)
-	} split('_', $entity));
+	} split('_', $name));
 }
 
 =head2 entity_name
 
-Generate the table name string from the given package name.
+Generate the entity name string from the given package name.
 
 =cut
 
@@ -123,7 +199,7 @@ Create new field for the given entity.
 sub create_field {
 	my ($self, $entity, $field) = @_;
 
-	my $pkg = $self->package_name($entity->name);
+	my $pkg = $self->package_name($entity);
 	my $k = join('::', $pkg, $field->name);
 	logDebug("Create accessor [%s] on [%s]", $field->name, $pkg);
 
@@ -149,6 +225,7 @@ sub create_field {
 			{ no strict 'refs'; *{$k} = $accessor; }
 		}
 	}
+
 	return $self;
 }
 

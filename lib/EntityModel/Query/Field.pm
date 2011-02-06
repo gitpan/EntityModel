@@ -1,6 +1,6 @@
 package EntityModel::Query::Field;
 BEGIN {
-  $EntityModel::Query::Field::VERSION = '0.001'; # TRIAL
+  $EntityModel::Query::Field::VERSION = '0.002'; # TRIAL
 }
 use EntityModel::Class {
 	'_isa' => [qw(EntityModel::Query::Base)],
@@ -16,7 +16,7 @@ EntityModel::Query::Field
 
 =head1 VERSION
 
-version 0.001
+version 0.002
 
 =head1 SYNOPSIS
 
@@ -72,7 +72,7 @@ sub quotedValue {
 	my $self = shift;
 	my $v = $self->value;
 	return 'null' unless defined $v && $v ne 'undef';
-	return $v if $self->field->type ~~ [qw/int bigint serial bigserial numeric/];
+	return $v if $self->field && $self->field->type ~~ [qw/int bigint serial bigserial numeric/];
 	$v =~ s/'/''/g;
 	$v =~ s!\\!\\\\!g;
 	return "E'$v'";
