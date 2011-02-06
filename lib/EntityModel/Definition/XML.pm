@@ -1,6 +1,6 @@
 package EntityModel::Definition::XML;
 BEGIN {
-  $EntityModel::Definition::XML::VERSION = '0.002'; # TRIAL
+  $EntityModel::Definition::XML::VERSION = '0.003'; # TRIAL
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Definition}],
@@ -12,7 +12,7 @@ EntityModel::Definition::XML - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.002
+version 0.003
 
 =head1 SYNOPSIS
 

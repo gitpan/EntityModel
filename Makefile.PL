@@ -28,9 +28,10 @@ my %WriteMakefileArgs = (
     'Cache::Memcached::Fast' => '0',
     'EntityModel::Class' => '0.001',
     'EntityModel::Log' => '0.001',
-    'Module::Load' => '0'
+    'Module::Load' => '0',
+    'XML::XPath' => '1.00'
   },
-  'VERSION' => '0.002',
+  'VERSION' => '0.003',
   'test' => {
     'TESTS' => 't/*.t'
   }
