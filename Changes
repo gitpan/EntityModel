@@ -1,4 +1,9 @@
+0.004     2011-02-06 06:02:05 Europe/London
+	Add remaining dependencies, including EntityModel::Class 0.002 which provides a UNITCHECK fix for
+	non-multiplicity-enabled perl versions.
+
 0.003     2011-02-06 02:46:11 Europe/London
+	Add missing XML::XPath dependency
 
 0.002     2011-02-06 00:31:18 Europe/London
 	Improve tests and handling for N:M join tables.

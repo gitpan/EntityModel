@@ -15,9 +15,11 @@ meta-spec:
 name: EntityModel
 requires:
   Cache::Memcached::Fast: 0
-  EntityModel::Class: 0.001
+  EntityModel::Class: 0.002
   EntityModel::Log: 0.001
+  JSON::XS: 2.00
   Module::Load: 0
+  Template: 2.18
   XML::XPath: 1.00
   perl: 5.010
-version: 0.003
+version: 0.004

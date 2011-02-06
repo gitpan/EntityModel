@@ -26,12 +26,14 @@ my %WriteMakefileArgs = (
   'NAME' => 'EntityModel',
   'PREREQ_PM' => {
     'Cache::Memcached::Fast' => '0',
-    'EntityModel::Class' => '0.001',
+    'EntityModel::Class' => '0.002',
     'EntityModel::Log' => '0.001',
+    'JSON::XS' => '2.00',
     'Module::Load' => '0',
+    'Template' => '2.18',
     'XML::XPath' => '1.00'
   },
-  'VERSION' => '0.003',
+  'VERSION' => '0.004',
   'test' => {
     'TESTS' => 't/*.t'
   }

@@ -1,6 +1,6 @@
 package EntityModel::Cache;
 BEGIN {
-  $EntityModel::Cache::VERSION = '0.003'; # TRIAL
+  $EntityModel::Cache::VERSION = '0.004'; # TRIAL
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Cache - base class for L<EntityModel> caching support
 
 =head1 VERSION
 
-version 0.003
+version 0.004
 
 =head1 SYNOPSIS
 
