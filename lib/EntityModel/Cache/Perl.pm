@@ -1,6 +1,6 @@
 package EntityModel::Cache::Perl;
 BEGIN {
-  $EntityModel::Cache::Perl::VERSION = '0.004'; # TRIAL
+  $EntityModel::Cache::Perl::VERSION = '0.005'; # TRIAL
 }
 use EntityModel::Class {
 	_isa => [qw(EntityModel::Cache)],
@@ -12,7 +12,7 @@ EntityModel::Cache::Perl -
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 

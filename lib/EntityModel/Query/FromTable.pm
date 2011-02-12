@@ -1,6 +1,6 @@
 package EntityModel::Query::FromTable;
 BEGIN {
-  $EntityModel::Query::FromTable::VERSION = '0.004'; # TRIAL
+  $EntityModel::Query::FromTable::VERSION = '0.005'; # TRIAL
 }
 use EntityModel::Class {
 	_isa => [qw(EntityModel::Query::Table)],
@@ -12,7 +12,7 @@ EntityModel::Query::FromTable
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 

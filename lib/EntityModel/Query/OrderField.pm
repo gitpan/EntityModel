@@ -1,6 +1,6 @@
 package EntityModel::Query::OrderField;
 BEGIN {
-  $EntityModel::Query::OrderField::VERSION = '0.004'; # TRIAL
+  $EntityModel::Query::OrderField::VERSION = '0.005'; # TRIAL
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query::Field}],
@@ -13,7 +13,7 @@ EntityModel::Query::OrderField
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 

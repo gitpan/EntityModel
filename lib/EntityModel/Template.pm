@@ -1,6 +1,6 @@
 package EntityModel::Template;
 BEGIN {
-  $EntityModel::Template::VERSION = '0.004'; # TRIAL
+  $EntityModel::Template::VERSION = '0.005'; # TRIAL
 }
 use EntityModel::Class { };
 
@@ -10,7 +10,7 @@ EntityModel::Template - template handling for L<EntityModel>
 
 =head1 VERSION
 
-version 0.004
+version 0.005
 
 =head1 SYNOPSIS
 

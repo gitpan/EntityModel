@@ -1,12 +1,15 @@
 use strict;
 use warnings;
 
-use Test::More tests => 41;
+use Test::More tests => 47;
 use Test::Deep;
 use EntityModel;
 
 # Read in the model definition first
 my $model;
+
+# Load the model and Perl definitions within a BEGIN block. This is optional but allows
+# us to check that the loading works as expected.
 BEGIN {
 	$model = EntityModel->new->load_from(
 		XML => { string => q{
@@ -110,21 +113,23 @@ BEGIN {
   </entity>
 </entitymodel>}
 	});
+	$model->add_storage(Perl => { });
+	$model->add_support('Perl' => {
+		namespace => 'Entity',
+	});
 }
 
 # Check that we loaded okay
 is($model->entity->count, 4, 'have entities');
 
-$model->add_storage(Perl => { });
-$model->add_support('Perl' => {
-	namespace => 'Entity',
-});
-
-foreach my $type (qw/Entity::Article Entity::Author/) {
+foreach my $type (qw/Entity::Article Entity::Author Entity::Tag Entity::Article::Tag/) {
 	can_ok($type, $_) for qw/new create find/;
 }
 
 my $id;
+
+# Do the first set of tests within a transaction. The storage class may not treat these any differently
+# but make sure that it doesn't complain or lose information on transaction exit.
 $model->transaction(sub {
 	ok(my $author = Entity::Author->create({
 		name	=> 'Author name',

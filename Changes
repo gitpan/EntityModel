@@ -1,3 +1,6 @@
+0.005     2011-02-12 16:01:19 Europe/London
+	Fix dependencies and minor test cleanups.
+
 0.004     2011-02-06 06:02:05 Europe/London
 	Add remaining dependencies, including EntityModel::Class 0.002 which provides a UNITCHECK fix for
 	non-multiplicity-enabled perl versions.
