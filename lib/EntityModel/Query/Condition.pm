@@ -1,6 +1,6 @@
 package EntityModel::Query::Condition;
 BEGIN {
-  $EntityModel::Query::Condition::VERSION = '0.005'; # TRIAL
+  $EntityModel::Query::Condition::VERSION = '0.006'; # TRIAL
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query::Base}],
@@ -14,7 +14,7 @@ EntityModel::Query::Condition - a condition clause for where, on etc.
 
 =head1 VERSION
 
-version 0.005
+version 0.006
 
 =head1 SYNOPSIS
 
@@ -78,12 +78,12 @@ sub parseCondition {
 			} else {
 				$k = $self->quoteIdentifier($k) unless ref $k;
 				my $v = shift(@list);
-				if(ref $v ~~ [qw{HASH SCALAR}]) {
+				if(!ref($v)) {
 					$item = [ $k, $v ];
-				} elsif(ref $v) { 
-					$v = $self->parseCondition($v);
+				} elsif(ref($v) ~~ [qw{HASH SCALAR}]) {
 					$item = [ $k, $v ];
 				} else {
+					$v = $self->parseCondition($v);
 					$item = [ $k, $v ];
 				}
 			}

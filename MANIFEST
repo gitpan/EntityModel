@@ -6,7 +6,6 @@ Makefile.PL
 README
 bin/entitymodel
 dist.ini
-entitymodel.log
 examples/tm.pl
 lib/EntityModel.pm
 lib/EntityModel/Cache.pm

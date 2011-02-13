@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use 5.10.0;
+use 5.010;
 
 package EntityModel::Plugin::Test;
 use EntityModel::Class {
