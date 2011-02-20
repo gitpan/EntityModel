@@ -1,3 +1,6 @@
+0.007     2011-02-20 20:03:23 Europe/London
+	Tidy up some POD and package for the first non-trial release.
+
 0.006     2011-02-13 23:38:14 Europe/London
 	Attempt to fix test failure seen on Solaris where ref $v ~~ [...] was giving 'Argument "HASH" isn't numeric in
 	 smart match', and associated v-string error (http://www.cpantesters.org/cpan/report/f86d3c52-3792-11e0-bb29-ad544afd17af)

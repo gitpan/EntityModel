@@ -1,6 +1,6 @@
 package EntityModel::Query::Select;
 BEGIN {
-  $EntityModel::Query::Select::VERSION = '0.006'; # TRIAL
+  $EntityModel::Query::Select::VERSION = '0.007';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query}],
@@ -8,11 +8,11 @@ use EntityModel::Class {
 
 =head1 NAME
 
-EntityModel::Query::Select
+EntityModel::Query::Select - select statement definition
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 

@@ -24,4 +24,4 @@ requires:
   Template: 2.18
   XML::XPath: 1.00
   perl: 5.010
-version: 0.006
+version: 0.007

@@ -1,6 +1,6 @@
 package EntityModel::Entity;
 BEGIN {
-  $EntityModel::Entity::VERSION = '0.006'; # TRIAL
+  $EntityModel::Entity::VERSION = '0.007';
 }
 use EntityModel::Class {
 	name		=> { type => 'string' },
@@ -19,7 +19,7 @@ EntityModel::Entity - entity definition for L<EntityModel>
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 

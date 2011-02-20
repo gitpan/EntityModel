@@ -1,6 +1,6 @@
 package EntityModel::Query::Insert;
 BEGIN {
-  $EntityModel::Query::Insert::VERSION = '0.006'; # TRIAL
+  $EntityModel::Query::Insert::VERSION = '0.007';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query}],
@@ -9,11 +9,11 @@ use EntityModel::Class {
 
 =head1 NAME
 
-EntityModel::Query::Insert
+EntityModel::Query::Insert - support for INSERT SQL statement
 
 =head1 VERSION
 
-version 0.006
+version 0.007
 
 =head1 SYNOPSIS
 
