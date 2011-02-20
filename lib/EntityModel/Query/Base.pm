@@ -1,6 +1,6 @@
 package EntityModel::Query::Base;
 BEGIN {
-  $EntityModel::Query::Base::VERSION = '0.007';
+  $EntityModel::Query::Base::VERSION = '0.008';
 }
 use EntityModel::Class;
 
@@ -10,7 +10,7 @@ EntityModel::Query::Base - base class for L<EntityModel::Query>-derived componen
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 

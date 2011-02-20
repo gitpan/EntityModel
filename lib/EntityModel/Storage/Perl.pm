@@ -1,10 +1,9 @@
 package EntityModel::Storage::Perl;
 BEGIN {
-  $EntityModel::Storage::Perl::VERSION = '0.007';
+  $EntityModel::Storage::Perl::VERSION = '0.008';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage}],
-	schema		=> { type => 'string' },
 	entity		=> { type => 'array', subclass => 'EntityModel::Entity' },
 };
 
@@ -14,7 +13,7 @@ EntityModel::Storage::Perl - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 
@@ -49,7 +48,6 @@ my %EntityMaxID;
 sub setup {
 	my $self = shift;
 	my %args = %{+shift};
-	$self->schema(delete $args{schema});
 	return $self;
 }
 

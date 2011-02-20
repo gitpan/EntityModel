@@ -1,10 +1,10 @@
 package EntityModel::Model;
 BEGIN {
-  $EntityModel::Model::VERSION = '0.007';
+  $EntityModel::Model::VERSION = '0.008';
 }
 use EntityModel::Class {
 	name		=> { type => 'string' },
-	schema		=> { type => 'string' },
+	handler		=> { type => 'hash' },
 	entity		=> { type => 'array', subclass => 'EntityModel::Entity' },
 # Private mapping for quick entity name lookup
 	entity_map	=> { type => 'hash', scope => 'private', watch => {
@@ -18,7 +18,7 @@ EntityModel::Model - base class for model definitions
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 
@@ -218,10 +218,8 @@ Helper method to create a new entity.
 sub new_entity {
 	my $self = shift;
 	my $name = shift;
-	die 'no schema' unless $self->schema;
 
 	my $entity = EntityModel::Entity->new($name);
-	$entity->schema($self->schema);
 	return $entity;
 }
 
@@ -234,7 +232,6 @@ Generate an appropriate L<EntityModel::Entity> for the given table name.
 sub add_table {
 	my ($self, $tbl) = @_;
 	my $entity = $self->new_entity($tbl->{name});
-	die 'no schema' unless $entity->schema;
 	my @fieldList = $self->read_fields($entity);
 	my @primaryList = $self->read_primary($entity);
 	logDebug("Import " . scalar(@fieldList) . " fields for " . $tbl->{name});
@@ -394,6 +391,36 @@ sub handler_for {
 	my $name = shift;
 	logDebug("Check for handlers for [%s] node", $name);
 	return;
+}
+
+sub add_plugin {
+	my $self = shift;
+	my $plugin = shift;
+	$plugin->register($self);
+	return $self;
+}
+
+sub provide_handler_for {
+	my $self = shift;
+	my @args = @_;
+	while(@args) {
+		my $k = shift(@args);
+		my $v = shift(@args);
+		$self->handler->set($k, $v);
+	}
+	return $self;
+}
+
+sub handle_item {	
+	my $self = shift;
+	my %args = @_;
+	if(my $code = $self->handler->get($args{item})) {
+		logDebug("Handling [%s] with plugin", $args{item});
+		$code->($self, item => $args{item}, data => $args{data});
+	} else {
+		logError("No handler for [%s]", $args{item});
+	}
+	return $self;
 }
 
 =head2 DESTROY

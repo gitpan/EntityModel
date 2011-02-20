@@ -1,3 +1,6 @@
+0.008     2011-02-20 23:25:09 Europe/London
+	Backport some basic plugin support.
+
 0.007     2011-02-20 20:03:23 Europe/London
 	Tidy up some POD and package for the first non-trial release.
 

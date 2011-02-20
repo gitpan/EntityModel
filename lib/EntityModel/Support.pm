@@ -1,6 +1,6 @@
 package EntityModel::Support;
 BEGIN {
-  $EntityModel::Support::VERSION = '0.007';
+  $EntityModel::Support::VERSION = '0.008';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 

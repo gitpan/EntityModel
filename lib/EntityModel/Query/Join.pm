@@ -1,6 +1,6 @@
 package EntityModel::Query::Join;
 BEGIN {
-  $EntityModel::Query::Join::VERSION = '0.007';
+  $EntityModel::Query::Join::VERSION = '0.008';
 }
 use EntityModel::Class {
 	'table' => { type => 'EntityModel::Query::JoinTable' },
@@ -15,7 +15,7 @@ EntityModel::Query::Join - base class for JOIN tables
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 

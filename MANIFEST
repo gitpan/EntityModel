@@ -63,6 +63,7 @@ t/definition.t
 t/entitymodel.t
 t/general.t
 t/new-api.t
+t/plugin.t
 t/query.t
 t/storage.t
 t/template.t

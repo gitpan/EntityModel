@@ -1,6 +1,6 @@
 package EntityModel::Field;
 BEGIN {
-  $EntityModel::Field::VERSION = '0.007';
+  $EntityModel::Field::VERSION = '0.008';
 }
 use EntityModel::Class {
 	'name'		=> { type => 'string' },
@@ -21,7 +21,7 @@ EntityModel::Field - field definitions for L<EntityModel>
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 

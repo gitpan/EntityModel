@@ -9,7 +9,6 @@ my $model = EntityModel->new(
 	'Load::XML' => \q{
 <entitymodel>
   <name>EMTest</name>
-  <schema>emtest</schema>
   <table>
     <name>article</name>
     <schema>emtest</schema>

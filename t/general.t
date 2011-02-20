@@ -15,7 +15,6 @@ BEGIN {
 		XML => { string => q{
 <entitymodel>
   <name>EMTest</name>
-  <schema>emtest</schema>
   <entity>
     <name>article</name>
     <primary>idarticle</primary>

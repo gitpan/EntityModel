@@ -3,14 +3,13 @@ package EntityModel;
 use EntityModel::Class {
 	_isa		=> [qw(EntityModel::Model)],
 	name		=> { type => 'string' },
-	schema		=> { type => 'string' },
 	plugin		=> { type => 'array', subclass => 'EntityModel::Plugin' },
 	support		=> { type => 'array', subclass => 'EntityModel::Support' },
 	storage		=> { type => 'array', subclass => 'EntityModel::Storage' },
 	db		=> { type => 'EntityModel::DB' },
 };
 
-our $VERSION = '0.007';
+our $VERSION = '0.008';
 
 =head1 NAME
 
@@ -18,7 +17,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 

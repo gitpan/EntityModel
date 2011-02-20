@@ -1,6 +1,6 @@
 package EntityModel::Definition;
 BEGIN {
-  $EntityModel::Definition::VERSION = '0.007';
+  $EntityModel::Definition::VERSION = '0.008';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Definition - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.007
+version 0.008
 
 =head1 SYNOPSIS
 
@@ -71,12 +71,22 @@ sub apply_model_from_structure {
 	my $model = delete $args{model};
 	my $definition = delete $args{structure};
 
+	if(my $name = delete $definition->{name}) {
+		$model->name($name);
+	}
+
 	if(my $entity = delete $definition->{entity}) {
 		my @entity_list = @$entity;
 		$self->add_entity_to_model(
 			model	=> $model,
 			definition => $_
 		) foreach @$entity;
+	}
+	foreach my $k (keys %$definition) {
+		$model->handle_item(
+			item	=> $k,
+			data	=> $definition->{$k}
+		);
 	}
 	$model->resolve_entity_dependencies;
 	return $self;
@@ -98,6 +108,10 @@ sub add_entity_to_model {
 	$model->add_entity($entity);
 	return $self;
 }
+
+=head2 C<register>
+
+=cut
 
 sub register {
 	my $self = shift;
