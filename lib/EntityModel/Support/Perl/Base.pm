@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl::Base;
 BEGIN {
-  $EntityModel::Support::Perl::Base::VERSION = '0.008';
+  $EntityModel::Support::Perl::Base::VERSION = '0.009';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support::Perl::Base - base class for entity instances
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package EntityModel::Model;
 BEGIN {
-  $EntityModel::Model::VERSION = '0.008';
+  $EntityModel::Model::VERSION = '0.009';
 }
 use EntityModel::Class {
 	name		=> { type => 'string' },
@@ -18,7 +18,7 @@ EntityModel::Model - base class for model definitions
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl;
 BEGIN {
-  $EntityModel::Support::Perl::VERSION = '0.008';
+  $EntityModel::Support::Perl::VERSION = '0.009';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Support}],
@@ -15,7 +15,7 @@ EntityModel::Support::Perl - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 

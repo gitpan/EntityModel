@@ -9,7 +9,7 @@ use EntityModel::Class {
 	db		=> { type => 'EntityModel::DB' },
 };
 
-our $VERSION = '0.008';
+our $VERSION = '0.009';
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 
@@ -645,6 +645,8 @@ but it appears to be widely deployed.
 =item * L<Fey::ORM> - newer than the other options, also appears to be reasonably flexible.
 
 =item * L<DBIx::DataModel> - UML-based Object-Relational Mapping (ORM) framework.
+
+=item * L<Alzabo> - another ORM which includes features such as GUI schema editing and SQL diff
 
 =item * L<Class::DBI> - generally considered to be superceded by L<DBIx::Class>, which provides a compatibility layer for existing applications.
 

@@ -28,14 +28,14 @@ my %WriteMakefileArgs = (
     'Cache::Memcached::Fast' => '0',
     'DBI' => '0',
     'DateTime::Format::Duration' => '0',
-    'EntityModel::Class' => '0.002',
-    'EntityModel::Log' => '0.001',
+    'EntityModel::Class' => '0.004',
+    'EntityModel::Log' => '0.002',
     'JSON::XS' => '2.00',
     'Module::Load' => '0',
     'Template' => '2.18',
     'XML::XPath' => '1.00'
   },
-  'VERSION' => '0.008',
+  'VERSION' => '0.009',
   'test' => {
     'TESTS' => 't/*.t'
   }

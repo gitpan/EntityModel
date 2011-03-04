@@ -1,6 +1,6 @@
 package EntityModel::Cache::MemcachedFast;
 BEGIN {
-  $EntityModel::Cache::MemcachedFast::VERSION = '0.008';
+  $EntityModel::Cache::MemcachedFast::VERSION = '0.009';
 }
 use EntityModel::Class {
 	_isa	=> [qw(EntityModel::Cache)],
@@ -15,7 +15,7 @@ EntityModel::Cache::MemcachedFast - L<Cache::Memcached::Fast>-backed cache layer
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 

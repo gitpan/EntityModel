@@ -1,8 +1,10 @@
 package EntityModel::Template;
 BEGIN {
-  $EntityModel::Template::VERSION = '0.008';
+  $EntityModel::Template::VERSION = '0.009';
 }
-use EntityModel::Class { };
+use EntityModel::Class {
+	include_path	=> { type => 'array', subclass => 'string' }
+};
 
 =head1 NAME
 
@@ -10,7 +12,7 @@ EntityModel::Template - template handling for L<EntityModel>
 
 =head1 VERSION
 
-version 0.008
+version 0.009
 
 =head1 SYNOPSIS
 
@@ -25,51 +27,10 @@ use Tie::Cache::LRU;
 use DateTime::Format::Duration;
 use POSIX qw/floor/;
 
-tie my %longDateHash, 'Tie::Cache::LRU', 5000;
-tie my %shortDateHash, 'Tie::Cache::LRU', 5000;
-
-my $templateCache;
+tie my %LONG_DATE_HASH, 'Tie::Cache::LRU', 5000;
+tie my %SHORT_DATE_HASH, 'Tie::Cache::LRU', 5000;
 
 our $BasePath = '.';
-
-=head2 fromNow
-
-Duration from/since now
-
-=cut
-
-sub fromNow {
-	my $v = shift;
-	return ' ' unless $v;
-	$v = DateTime->from_epoch(epoch => $1) if !ref($v) && $v =~ /^(\d+)$/;
-	my $delta = $v->epoch - time;
-	my $neg;
-	if($delta < 0) {
-		$neg = 1;
-		$delta = -$delta;
-	}
-	my @p;
-	my @match = (
-		second => 60,
-		minute => 60,
-		hour => 24,
-		day => 30,
-		month => 12,
-		year => 0
-	);
-	while($delta && @match) {
-		my $k = shift @match;
-		my $m = shift @match;
-		my $unit = $m ? ($delta % $m) : $delta;
-		$delta = floor($delta / $m) if $m;
-		unshift @p, "$unit $k" . ($unit != 1 ? 's' : '');
-	}
-# Don't show too much resolution 
-	@p = splice(@p, 0, 2) if @p > 2;
-	my $pattern = join(', ', @p);
-
-	return $pattern . ($neg ? ' ago' : ' from now');
-}
 
 BEGIN {
 # Convenience functions so we can do something.arrayref and be sure to get back something FOREACH-suitable
@@ -86,9 +47,9 @@ BEGIN {
 		my $v = shift;
 		return DateTime::Format::Duration->new(pattern => '%H:%M:%S.%3N')->format_duration($v);
 	};
-	$Template::Stash::HASH_OPS->{ fromNow } = sub {
+	$Template::Stash::HASH_OPS->{ from_now } = sub {
 		my $v = shift;
-		return fromNow($v);
+		return from_now($v);
 	};
 	$Template::Stash::HASH_OPS->{ 'ref' } = sub {
 		my $scalar = shift;
@@ -114,20 +75,138 @@ BEGIN {
 sub new {
 	my $class = shift;
 	my $self = bless { data => { } }, $class;
-	$self->{template} = $templateCache if $templateCache;
+	my %args = @_;
+	if(defined(my $include = delete $args{include_path})) {
+		$include = [ $include ] unless ref $include;
+		$self->include_path->push($_) for @$include;
+	}
+
+	# We want access to _ methods, such as _view, so disable this.
+	undef $Template::Stash::PRIVATE;
+
+	my %cfg = (
+		INCLUDE_PATH	=> [ $self->include_path->list ],
+		INTERPOLATE	=> 0,
+		ABSOLUTE	=> 0,
+		RELATIVE	=> 0,
+		RECURSION	=> 1,
+		AUTO_RESET	=> 0,
+		STAT_TTL	=> 15,
+		COMPILE_DIR	=> '/tmp/ttc',
+		CACHE_SIZE	=> 4096,
+		PRE_DEFINE	=> {
+#				cfg		=> \%EntityModel::Config::Current,
+#				imageHost	=> 'http://' . EntityModel::Config::ImageHost,
+#				scriptHost	=> 'http://' . EntityModel::Config::ScriptHost,
+		},
+		FILTERS		=> {
+			long_date	=> [
+				sub {
+					my ($context, @args) = @_;
+					return sub {
+						return long_date(shift, @args);
+					}
+				}, 1
+			],
+			short_date	=> [
+				sub {
+					my ($context, @args) = @_;
+					return sub {
+						return short_date(shift, @args);
+					}
+				}, 1
+			],
+			ymd_date	=> [
+				sub {
+					my ($context, @args) = @_;
+					return sub {
+						return ymd_date(shift, @args);
+					}
+				}, 1
+			],
+			tidy_ymd	=> [
+				sub {
+					my ($context, @args) = @_;
+					return sub {
+						return tidy_ymd(shift, @args);
+					}
+				}, 1
+			],
+			from_now	=> [
+				sub {
+					my ($context, @args) = @_;
+					return sub {
+						return from_now(shift, @args);
+					}
+				}, 1
+			],
+			as_duration => [
+				sub {
+					my ($context, @args) = @_;
+					return sub {
+						return as_duration(shift, @args);
+					}
+				}, 1
+			],
+		},
+	);
+	#$cfg{CONTEXT} = new Template::Timer(%cfg) if EntityModel::Config::Debug;
+	my $tmpl = Template->new(%cfg) or die Template->error;
+	$self->{ template } = $tmpl;
 	return $self;
 }
 
-=head2 longDate
+=head2 from_now
+
+Duration from/since now
+
+=cut
+
+sub from_now {
+	my $v = shift;
+	return ' ' unless $v;
+
+	$v = DateTime->from_epoch(epoch => $1) if !ref($v) && $v =~ /^(\d+(?:\.\d*))$/;
+	my $delta = $v->epoch - time;
+	my $neg;
+	if($delta < 0) {
+		$neg = 1;
+		$delta = -$delta;
+	}
+	my @p;
+	my @match = (
+		second => 60,
+		minute => 60,
+		hour => 24,
+		day => 30,
+		month => 12,
+		year => 0
+	);
+	while($delta && @match) {
+		my $k = shift @match;
+		my $m = shift @match;
+		my $unit = $m ? ($delta % $m) : $delta;
+		$delta = floor($delta / $m) if $m;
+		unshift @p, "$unit $k" . ($unit != 1 ? 's' : '');
+	}
+
+# Don't show too much resolution 
+	@p = @p[0..1] if @p > 2;
+	my $pattern = join(', ', @p);
+
+	return $pattern . ($neg ? ' ago' : ' from now');
+}
+
+=head2 long_date
 
 Long date format filter.
 
 =cut
 
-sub longDate {
+sub long_date {
 	my ($v, $fmt) = @_;
 	return ' ' unless $v;
-	unless ($longDateHash{$v}) {
+	unless ($LONG_DATE_HASH{$v}) {
 		my $dt;
 		if($v =~ m/^(\d{4})-(\d{2})-(\d{2})\s+(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?$/) {
 			my ($year, $month, $day, $hour, $minute, $second, $us) = ($1, $2, $3, $4, $5, $6, $7);
@@ -143,25 +222,25 @@ sub longDate {
 		} else {
 			$dt = DateTime->from_epoch(epoch => $v);
 		}
-		$longDateHash{$v} = $dt->strftime('%e %b %Y, %l:%M %P');
+		$LONG_DATE_HASH{$v} = $dt->strftime('%e %b %Y, %l:%M %P');
 	}
-	return $longDateHash{$v};
+	return $LONG_DATE_HASH{$v};
 }
 
-=head2 shortDate
+=head2 short_date
 
 Short date format filter.
 
 =cut
 
-sub shortDate {
+sub short_date {
 	my ($v, $fmt) = @_;
 	return ' ' unless $v;
-	unless ($shortDateHash{$v}) {
+	unless ($SHORT_DATE_HASH{$v}) {
 		my $dt;
 		if($v =~ m/^(\d+)-(\d+)-(\d+)/) {
 			my ($year, $month, $day) = ($1, $2, $3);
-			$dt = new DateTime(
+			$dt = DateTime->new(
 				year		=> $year,
 				month		=> $month,
 				day		=> $day,
@@ -177,18 +256,18 @@ sub shortDate {
 		} elsif(($dt->day % 10) == 3 && ($dt->day != 13)) {
 			$suffix = 'rd';
 		}
-		$shortDateHash{$v} = $dt->strftime("%d$suffix %b");
+		$SHORT_DATE_HASH{$v} = $dt->strftime("%d$suffix %b");
 	}
-	return $shortDateHash{$v};
+	return $SHORT_DATE_HASH{$v};
 }
 
-=head2 ymdDate
+=head2 ymd_date
 
 YMD date filter
 
 =cut
 
-sub ymdDate {
+sub ymd_date {
 	my ($v, $fmt) = @_;
 	return ' ' unless $v;
 	my $dt;
@@ -201,13 +280,13 @@ sub ymdDate {
 	return $dt->strftime('%Y-%m-%d');
 }
 
-=head2 tidyYMD
+=head2 tidy_ymd
 
 YMD date filter
 
 =cut
 
-sub tidyYMD {
+sub tidy_ymd {
 	my ($v, $fmt) = @_;
 	return ' ' unless $v;
 	my $dt;
@@ -220,13 +299,13 @@ sub tidyYMD {
 	}
 }
 
-=head2 trackDuration
+=head2 as_duration
 
 Convert duration to MM:SS representation.
 
 =cut
 
-sub trackDuration {
+sub as_duration {
 	my ($v, $fmt) = @_;
 	return ' ' unless $v;
 
@@ -239,128 +318,30 @@ Return the TT2 object, created as necessary.
 
 =cut
 
-sub template {
-	my $self = shift;
-	unless($self->{template}) {
-		# We want access to _ methods, such as _view, so disable this.
-		undef $Template::Stash::PRIVATE;
+sub template { shift->{template} }
 
-		my @early = qw(Util.tt2 Form.tt2 Menu.tt2 Content.tt2 General.tt2);
-		my @modules = grep {
-			!($_ ~~ [@early, 'Page.tt2'])
-		} map {
-			basename($_)
-		} glob($BasePath . '/template/*.tt2');
-		foreach my $path (qw(Entity)) {
-			push @modules, map {
-				$path . '/' . basename($_)
-			} glob($BasePath . '/template/' . $path . '/*.tt2');
-		}
-		logDebug("Path [%s]", $BasePath . '/template');
-		logDebug("Early   module: [%s]", $_) foreach @early;
-		logDebug("Regular module: [%s]", $_) foreach @modules;
-		my %cfg = (
-			INCLUDE_PATH	=> [ $BasePath . '/template', '/home/tom/dev/EntityModel/template' ],
-			PRE_PROCESS	=> [ @early, @modules ],
-			INTERPOLATE	=> 0,
-			ABSOLUTE	=> 0,
-			RELATIVE	=> 0,
-			RECURSION	=> 1,
-			AUTO_RESET	=> 0,
-			STAT_TTL	=> 5,
-			COMPILE_DIR	=> '/tmp/ttc', # $BasePath . '/ttc',
-			# COMPILE_DIR	=> undef,
-			CACHE_SIZE	=> 4096,
-			PRE_DEFINE	=> {
-#				cfg		=> \%EntityModel::Config::Current,
-#				imageHost	=> 'http://' . EntityModel::Config::ImageHost,
-#				scriptHost	=> 'http://' . EntityModel::Config::ScriptHost,
-			},
-			FILTERS		=> {
-				longDate	=> [
-					sub {
-						my ($context, @args) = @_;
-						return sub {
-							return longDate(shift, @args);
-						}
-					}, 1
-				],
-				shortDate	=> [
-					sub {
-						my ($context, @args) = @_;
-						return sub {
-							return shortDate(shift, @args);
-						}
-					}, 1
-				],
-				ymdDate	=> [
-					sub {
-						my ($context, @args) = @_;
-						return sub {
-							return ymdDate(shift, @args);
-						}
-					}, 1
-				],
-				tidyYMD	=> [
-					sub {
-						my ($context, @args) = @_;
-						return sub {
-							return tidyYMD(shift, @args);
-						}
-					}, 1
-				],
-				fromNow	=> [
-					sub {
-						my ($context, @args) = @_;
-						return sub {
-							return fromNow(shift, @args);
-						}
-					}, 1
-				],
-				trackDuration => [
-					sub {
-						my ($context, @args) = @_;
-						return sub {
-							return trackDuration(shift, @args);
-						}
-					}, 1
-				],
-			},
-			PLUGINS		=> {
-				calendar => 'EntityModel::Template::Plugin::Calendar'
-			}
-		);
-		#$cfg{CONTEXT} = new Template::Timer(%cfg) if EntityModel::Config::Debug;
-		my $tmpl = Template->new(%cfg)
-			or die Template->error;
-		$self->{ template } = $tmpl;
-		$templateCache = $tmpl;
-	}
-	return $self->{ template };
-}
-
-sub mergeData {
-	my ($self, $origData) = @_;
-	my %data = %{$self->{data}};
-	foreach my $k (keys %$origData) {
-		$data{$k} = $origData->{$k};
-	}
-	return \%data;
-}
-
-=head2 asText
+=head2 as_text
 
 Return template output as text.
 
 =cut
 
-sub asText {
+sub as_text {
 	my ($self, $template, $newData) = @_;
-	my $data = $self->mergeData($newData);
+	$newData ||= {};
+	my %data = ( %{ $self->{data} }, %$newData );
 	my $output;
 	my $tt = $self->template;
-	$tt->process($template, $data, \$output) || die 'Failed template: ' . $tt->error;
+	$tt->process($template, \%data, \$output) || die 'Failed template: ' . $tt->error;
 	return $output;
+}
+
+sub process_template {
+	my $self = shift;
+	my $tmpl = shift;
+	my $tt = $self->template;
+	$tt->process($tmpl, undef, \my $output) or die "Failed template: " . $tt->error;
+	return $self;
 }
 
 =head2 processHTML
@@ -371,7 +352,7 @@ Process HTML data.
 
 sub processHTML {
 	my ($self, $template, $newData) = @_;
-	my $data = $self->mergeData($newData);
+	my $data = { %{$self->{data}}, %$newData };
 
 	my $tt = $self->template;
 	my $output;
@@ -401,7 +382,7 @@ Generate output via Apache2 print.
 
 sub output {
 	my ($self, $template, $newData, $r) = @_;
-	my $data = $self->mergeData($newData);
+	my $data = { %{$self->{data}}, %$newData };
 
 	logInfo("Output");
 	my $output = $self->processHTML($template, $data);
