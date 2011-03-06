@@ -1,6 +1,6 @@
 package EntityModel::Query::JoinTable;
 BEGIN {
-  $EntityModel::Query::JoinTable::VERSION = '0.009';
+  $EntityModel::Query::JoinTable::VERSION = '0.010';
 }
 use EntityModel::Class {
 	_isa => [qw(EntityModel::Query::Table)]
@@ -12,7 +12,7 @@ EntityModel::Query::JoinTable - join table definition
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 

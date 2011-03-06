@@ -1,6 +1,6 @@
 package EntityModel::Model;
 BEGIN {
-  $EntityModel::Model::VERSION = '0.009';
+  $EntityModel::Model::VERSION = '0.010';
 }
 use EntityModel::Class {
 	name		=> { type => 'string' },
@@ -18,7 +18,7 @@ EntityModel::Model - base class for model definitions
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 
@@ -391,13 +391,6 @@ sub handler_for {
 	my $name = shift;
 	logDebug("Check for handlers for [%s] node", $name);
 	return;
-}
-
-sub add_plugin {
-	my $self = shift;
-	my $plugin = shift;
-	$plugin->register($self);
-	return $self;
 }
 
 sub provide_handler_for {

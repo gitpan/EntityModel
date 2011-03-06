@@ -1,6 +1,6 @@
 package EntityModel::Template;
 BEGIN {
-  $EntityModel::Template::VERSION = '0.009';
+  $EntityModel::Template::VERSION = '0.010';
 }
 use EntityModel::Class {
 	include_path	=> { type => 'array', subclass => 'string' }
@@ -12,7 +12,7 @@ EntityModel::Template - template handling for L<EntityModel>
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 
@@ -92,6 +92,7 @@ sub new {
 		RECURSION	=> 1,
 		AUTO_RESET	=> 0,
 		STAT_TTL	=> 15,
+		COMPILE_EXT	=> '.ttc',
 		COMPILE_DIR	=> '/tmp/ttc',
 		CACHE_SIZE	=> 4096,
 		PRE_DEFINE	=> {

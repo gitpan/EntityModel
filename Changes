@@ -1,3 +1,8 @@
+0.010     2011-03-06 02:46:17 Europe/London
+	Move ->add_plugin method to EntityModel top level class.
+	Allow EntityModel plugins to be provided using the Name => { ... } format
+	 or as an instance, for compatibility with other methods such as
+	 add_storage
 0.009     2011-03-04 17:23:14 Europe/London
 	Fix EntityModel::Template handling, needed for EntityModel::Web
 

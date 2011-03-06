@@ -9,7 +9,7 @@ use EntityModel::Class {
 	db		=> { type => 'EntityModel::DB' },
 };
 
-our $VERSION = '0.009';
+our $VERSION = '0.010';
 
 =head1 NAME
 
@@ -17,7 +17,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 
@@ -222,6 +222,26 @@ sub add_storage {
 	$obj->setup($v);
 	$obj->apply_model($self);
 	$self->storage->push($obj);
+	return $self;
+}
+
+=head2 add_plugin
+
+=cut
+
+sub add_plugin {
+	my $self = shift;
+	my ($name, $v) = @_;
+	my $plugin;
+	if(eval { $name->isa('EntityModel::Plugin') }) {
+		$plugin = $name;
+	} else {
+		my $mod = 'EntityModel::' . $name;
+		Module::Load::load($mod);
+		$plugin = $mod->new;
+	}
+	$plugin->register($self);
+	$self->plugin->push($plugin);
 	return $self;
 }
 

@@ -1,6 +1,6 @@
 package EntityModel::Storage;
 BEGIN {
-  $EntityModel::Storage::VERSION = '0.009';
+  $EntityModel::Storage::VERSION = '0.010';
 }
 use EntityModel::Class {
 	transaction	=> { type => 'array', subclass => 'EntityModel::Transaction' },
@@ -12,7 +12,7 @@ EntityModel::Storage - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.009
+version 0.010
 
 =head1 SYNOPSIS
 
