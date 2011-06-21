@@ -1,6 +1,6 @@
 package EntityModel::Cache::Perl;
 BEGIN {
-  $EntityModel::Cache::Perl::VERSION = '0.010';
+  $EntityModel::Cache::Perl::VERSION = '0.011';
 }
 use EntityModel::Class {
 	_isa => [qw(EntityModel::Cache)],
@@ -12,7 +12,7 @@ EntityModel::Cache::Perl - simple proof-of-concept Perl-level caching layer
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package EntityModel::Query::Intersect;
 BEGIN {
-  $EntityModel::Query::Intersect::VERSION = '0.010';
+  $EntityModel::Query::Intersect::VERSION = '0.011';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query::SubQuery}],
@@ -13,7 +13,7 @@ EntityModel::Query::Intersect - intersection set logic
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 

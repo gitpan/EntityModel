@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl;
 BEGIN {
-  $EntityModel::Support::Perl::VERSION = '0.010';
+  $EntityModel::Support::Perl::VERSION = '0.011';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Support}],
@@ -15,7 +15,7 @@ EntityModel::Support::Perl - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 
@@ -25,6 +25,8 @@ See L<EntityModel>.
 
 Generate Perl packages and methods based on an entity model definition.
 See L<EntityModel>.
+
+=head1 ASYNCHRONOUS MODE
 
 =head1 METHODS
 
@@ -70,7 +72,7 @@ sub apply_entity {
 
 # With 3 references, we currently don't really know what to do, so bail out for now
 	my @ref = grep { $_->refer } $entity->field->list;
-	die "Too many references to handle" if @ref > 2;
+	die qq{Too many references to handle\nThis module currently only handles 1:1, 1:N and N:M,\nso an entity with more than 3 external references\nneeds to have the relationships specified explicitly.} if @ref > 2;
 
 # Create a back collection for each reference
 	foreach (@ref) {
@@ -314,12 +316,9 @@ sub load_package {
 sub accessor {
 	my $self = shift;
 	my $type = shift;
-	given($type) {
-	when('timestamp') { return $self->timestamp_accessor(@_); }
-	when('ref') { return $self->ref_accessor(@_); }
-	default { return $self->default_accessor(@_); }
-	}
-	die "Failed";
+	return $self->timestamp_accessor(@_) if $type eq 'timestamp';
+	return $self->ref_accessor(@_) if $type eq 'ref';
+	return $self->default_accessor(@_);
 }
 
 =head2 default_accessor
@@ -351,6 +350,7 @@ sub default_accessor {
 			my $v = shift;
 			$self->{ $keyName } = $v;
 			$self->{ _update_required } = 1;
+			$self->commit;
 			return $self;
 		}
 
@@ -410,6 +410,7 @@ sub timestamp_accessor {
 			}
 			$self->{ $keyName } = $v;
 			$self->{ _update_required } = 1;
+			$self->commit;
 			return $self;
 		}
 
@@ -447,6 +448,7 @@ sub ref_accessor {
 	my $refpkg = $self->package_name($refEntity->name);
 	my $rf = $field->refer->field;
 
+# Return an accessor which instantiates this class if set
 	return sub {
 		my $self = shift;
 
@@ -457,13 +459,33 @@ sub ref_accessor {
 			return $self;
 		}
 
-# Populate where required
-		$self->_select(key => $keyName) if $self->{_incomplete} && !exists($self->{ $keyName });
+		# First check whether we're complete and so have some value for the ID (could be undef)
+		my $target;
+		if(exists $self->{$keyName}) {
+			# Return a NULL version of the target class if we know that we're dealing with NULL in the
+			# foreign key. We don't just pass back undef, since we want to support chained methods.
+			return $refpkg->new({ }, null => 1) unless defined $self->{$keyName};
 
-# Don't instantiate unless we have a non-null value
-		return EntityModel::Error->new('No value for ' . $self . ' field ' . $keyName) unless defined($self->{ $keyName });
+			# We have an ID, so we'll use this to instantiate the object. With luck, we have it cached
+			# or readily available so this instantiation should be relatively cheap. If not, we'll queue
+			# a storage pull request.
+			$target = $refpkg->new($self->{ $keyName });
+		} else {
+			# If we're incomplete and don't have the ID for this, we'll queue a completion request on $self,
+			# and instantiate the target class in a way that allows us to populate with ID when we have it.
+			$target = $refpkg->new({
+			}, pending => 1);
 
-		return $refpkg->new($self->{ $keyName });
+			$self->_request_load(
+				on_complete	=> $self->sap(sub {
+					my $self = shift;
+					$target->id($self->{ $keyName });
+					$target->_request_load;
+				}),
+				on_error	=> sub { die "some error occurred and we are not sure what to do about it"; }
+			);
+		}
+		return $target;
 	};
 }
 

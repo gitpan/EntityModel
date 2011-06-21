@@ -1,6 +1,6 @@
 package EntityModel::Storage::Perl;
 BEGIN {
-  $EntityModel::Storage::Perl::VERSION = '0.010';
+  $EntityModel::Storage::Perl::VERSION = '0.011';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage}],
@@ -13,7 +13,7 @@ EntityModel::Storage::Perl - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 
@@ -47,61 +47,13 @@ my %EntityMaxID;
 
 sub setup {
 	my $self = shift;
-	my %args = %{+shift};
-	return $self;
-}
-
-=head2 apply_model
-
-=cut
-
-sub apply_model {
-	my $self = shift;
-	my $model = shift;
-	logDebug("Apply model");
-	$self->apply_model_and_schema($model);
-}
-
-=head2 apply_model_and_schema
-
-=cut
-
-sub apply_model_and_schema {
-	my $self = shift;
-	my $model = shift;
-
-	my @pending = $model->entity->list;
-	my @existing;
-
-	ITEM:
-	while(@pending) {
-		my $entity = shift(@pending);
-
-		my @deps = $entity->dependencies;
-		my @pendingNames = map { $_->name } @pending;
-
-		# Include current entity in list of available entries, so that we can allow self-reference
-		foreach my $dep (@deps) {
-			unless(grep { $dep->name ~~ $_->name } @pending, @existing, $entity) {
-				logError("%s unresolved (pending %s, deps %s for %s)", $dep->name, join(',', @pendingNames), join(',', @deps), $entity->name);
-				die "Dependency error";
-			}
-		}
-
-		my @unsatisfied = grep { $_ ~~ [ map { $_->name } @deps ] } @pendingNames;
-		if(@unsatisfied) {
-			logInfo("%s has %d unsatisfied deps, postponing: %s", $entity->name, scalar @unsatisfied, join(',',@unsatisfied));
-			push @pending, $entity;
-			next ITEM;
-		}
-
-		$self->apply_entity($entity);
-		push @existing, $entity;
-	}
+#	my %args = %{+shift};
 	return $self;
 }
 
 =head2 apply_entity
+
+Set up this entity in storage, by adding it to the list of keys and clearing the existing max_id.
 
 =cut
 
@@ -132,10 +84,7 @@ sub read_primary {
 
 =head2 read_fields
 
-Read all fields for a given table.
-
-Since this is typically a slow query, we cache the entire set of fields for all tables on
-the first call.
+Read all fields for a given entity.
 
 =cut
 
@@ -182,14 +131,31 @@ Parameters:
 
 =back
 
+Callbacks (included in parameter list above):
+
+=over 4
+
+=item * on_complete - called when the value has been read, includes the value
+
+=back
+
 =cut
 
 sub read {
 	my $self = shift;
 	my %args = @_;
 	die "Entity not found" unless exists $EntityMap{$args{entity}->name};
-	return $EntityMap{$args{entity}->name}->{store}->{$args{id}};
+	my $v = $EntityMap{$args{entity}->name}->{store}->{$args{id}};
+	$args{on_complete}->($v) if exists $args{on_complete};
+	return $v;
 }
+
+=head2 _next_id
+
+Returns the next ID for the given entity. Not intended to be called outside this package;
+returns the value immediately rather than asynchronously.
+
+=cut
 
 sub _next_id {
 	my $self = shift;
@@ -213,6 +179,14 @@ Parameters:
 
 =back
 
+Callbacks (included in parameter list above):
+
+=over 4
+
+=item * on_complete - called when the value has been created, will be passed the assigned ID
+
+=back
+
 =cut
 
 sub create {
@@ -225,6 +199,7 @@ sub create {
 		$args{entity}->primary => $id
 	};
 	$self->store(%args);
+	$args{on_complete}->($id) if exists $args{on_complete};
 	return $id;
 }
 
@@ -244,13 +219,25 @@ Parameters:
 
 =back
 
+Callbacks (included in parameter list above):
+
+=over 4
+
+=item * on_complete - called when the value has been stored, will be passed the assigned ID
+
+=back
+
 =cut
 
 sub store {
 	my $self = shift;
 	my %args = @_;
 	die "Entity not found" unless exists $EntityMap{$args{entity}->name};
+	die "No ID given" unless defined $args{id};
+
 	$EntityMap{$args{entity}->name}->{store}->{$args{id}} = $args{data};
+	$args{on_complete}->($args{id}) if exists $args{on_complete};
+	return $self;
 }
 
 =head2 remove
@@ -267,6 +254,14 @@ Parameters:
 
 =back
 
+Callbacks (included in parameter list above):
+
+=over 4
+
+=item * on_complete - called when the value has been removed
+
+=back
+
 =cut
 
 sub remove {
@@ -274,9 +269,24 @@ sub remove {
 	my %args = @_;
 	die "Entity not found" unless exists $EntityMap{$args{entity}->name};
 	delete $EntityMap{$args{entity}->name}->{store}->{$args{id}};
+	$args{on_complete}->($args{id}) if exists $args{on_complete};
+	return $self;
 }
 
 =head2 find
+
+Callbacks (included in parameter list above):
+
+=over 4
+
+=item * on_item - called for each item
+
+=item * on_not_found - called once if no items were found
+
+=item * on_complete - called when no more items are forthcoming (regardless of whether any
+were found or not)
+
+=back
 
 =cut
 
@@ -285,15 +295,34 @@ sub find {
 	my %args = @_;
 
 	my @rslt;
+	my $seen = 0;
 	ENTRY:
 	foreach my $entry (values %{$EntityMap{$args{entity}->name}->{store}}) {
 		next ENTRY unless all { $entry->{$_} ~~ $args{data}->{$_} } keys %{$args{data}};
+		++$seen;
+		$args{on_item}->($entry) if exists $args{on_item};
 		push @rslt, $entry;
 	}
+	$args{on_not_found}->() if !$seen && exists $args{on_not_found};
+	$args{on_complete}->() if exists $args{on_complete};
 	return @rslt;
 }
 
 =head2 adjacent
+
+Returns the adjacent values for the given ID.
+
+Callbacks (included in parameter list above):
+
+=over 4
+
+=item * on_prev - called with the value of the previous item
+
+=item * on_next - called with the value of the next item
+
+=item * on_complete - called when both next and previous values have been identified
+
+=back
 
 =cut
 
@@ -305,7 +334,7 @@ sub adjacent {
 	my $entity = $args{entity};
 	my $id = $args{id};
 
-# You shouldn't be using this module in production code anyway...
+# Inefficient? Sure. You shouldn't be using this module in production code anyway.
 	my ($prev) = reverse grep {
 		$_ < $id
 	} sort keys %{$EntityMap{$entity->name}->{store}};
@@ -313,10 +342,27 @@ sub adjacent {
 		$_ > $id
 	} sort keys %{$EntityMap{$entity->name}->{store}};
 
+	$args{on_prev}->($prev) if exists $args{on_prev};
+	$args{on_next}->($next) if exists $args{on_next};
+	$args{on_complete}->($prev, $next) if exists $args{on_complete};
 	return ($prev, $next);
 }
 
 =head2 outer
+
+Returns the first and last values for the given ID.
+
+Callbacks (included in parameter list above):
+
+=over 4
+
+=item * on_first - called with the value of the previous item
+
+=item * on_last - called with the value of the next item
+
+=item * on_complete - called when both next and previous values have been identified
+
+=back
 
 =cut
 
@@ -329,6 +375,8 @@ sub outer {
 	my (@entries) = sort keys %{$EntityMap{$entity->name}->{store}};
 	my $first = shift @entries;
 	my $last = pop @entries;
+	$args{on_first}->($first) if exists $args{on_first};
+	$args{on_last}->($last) if exists $args{on_last};
 	return ($first, $last);
 }
 

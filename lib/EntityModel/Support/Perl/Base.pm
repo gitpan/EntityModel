@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl::Base;
 BEGIN {
-  $EntityModel::Support::Perl::Base::VERSION = '0.010';
+  $EntityModel::Support::Perl::Base::VERSION = '0.011';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support::Perl::Base - base class for entity instances
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 
@@ -21,12 +21,53 @@ version 0.010
 
 All entities are derived from this base class by default.
 
+=head1 ASYNCHRONOUS HANDLING
+
+When data has not yet been loaded for an entity, some additional logic is used to allow
+asynchronous requests via chained method accessors.
+
+Given a chain $book->author->address->city, where the first three entries are regular entities
+and the last item in the chain is an accessor for a scalar method:
+
+First, we check $book. If it is loaded (to the extent that ->author contains an entity instance),
+then we can use this existing instance. If not, we instantiate a new entity of this type, marked
+as incomplete and as a pending request, and continue.
+
+This means that a chain where some of the elements can be null is still valid. As data is populated,
+entries in this chain will be filled out, and cases where the foreign key value was null will end up
+marked as invalid entities.
+
+In general, unless you know beforehand that all entities in the chain have been populated, all access
+to chained entities should go through the L<EntityModel::Gather> interface to ensure that values are
+consistent.
+
+This also allows the backend storage to apply optimisations if available - if several pending requests
+address related storage areas, it may be possible for the storage engine to combine queries and return
+data faster.
+
+=head1 EVENTS
+
+Two types of events can be defined:
+
+=over 4
+
+=item * task - this is a one-shot event, typically used to call a piece of code after data has been written
+to or read from storage
+
+=item * event - this is an event handler that will be called every time an event occurs.
+
+=back
+
+These are handled by the L</_queue_task> and L</_attach_event> methods respectively.
+
 =cut
 
 use Time::HiRes qw{time};
 use DateTime;
 use DateTime::Format::Strptime;
 use Tie::Cache::LRU;
+
+sub _supported_callbacks { qw(before_commit after_load on_not_found) }
 
 =head2 new
 
@@ -74,7 +115,10 @@ sub new {
 	my %args = @_;
 
 	my %opt;
-	my $self = bless {}, $class;
+	my $self = bless {
+		_incomplete	=> 1
+	}, $class;
+	return $self if $args{pending};
 
 # Now we might want to provide some callbacks
 	while(my ($k, $v) = each %args) {
@@ -83,27 +127,68 @@ sub new {
 		} elsif($k ~~ $class->_supported_callbacks) {
 			$self->{_callback}->{$k} = $v;
 		} else {
-			die "Unknown callback $k requested";
+			warn "Unknown callback $k requested";
 		}
 	}
 
 # An arrayref or plain value is used as an ID 
 	if(!ref($spec) || ref($spec) eq 'ARRAY') {
-		my $data = $class->_storage->read(
-			entity	=> $class->_entity,
-			id	=> $spec
+		$class->_storage->read(
+			entity		=> $class->_entity,
+			id		=> $spec,
+			on_complete	=> sub {
+				my $data = shift;
+				$self->{$_} = $data->{$_} for keys %$data;
+				delete $self->{_incomplete};
+				$self->_event('on_load');
+			}
 		);
-		unless($data) {
-			$self->_event('on_not_found');
-			return EntityModel::Error->new('Could not instantiate');
-		}
-		$self->{$_} = $data->{$_} for keys %$data;
-		$self->_event('on_load');
 # A hashref (possibly empty) means we create a new object with the given values
 	} elsif(ref($spec) eq 'HASH') {
 		my $data = $class->_spec_from_hashref($spec);
 		$self->{$_} = $data->{$_} for keys %$data;
-		$self->{ _insert_required } = 1 if $opt{create};
+		if($opt{create}) {
+			$self->_queue_task(on_create => delete $args{on_complete}) if exists $args{on_complete};
+			$self->{ _insert_required } = 1;
+			$self->_insert(
+				on_complete	=> sub {
+					my $data = shift;
+					delete $self->{_incomplete};
+					$self->_event('on_create');
+				}
+			);
+		}
+	}
+	return $self;
+}
+
+=head2 _queue_task
+
+Queues a new one-shot task for the given event type.
+
+Supports the following event types:
+
+=over 4
+
+=item * on_load - data has been read from storage
+
+=item * on_create - initial data has been written to storage
+
+=item * on_update - values have been updated, but not necessarily written to storage
+
+=item * on_remove - this entry has been removed from storage 
+
+=item * on_not_found - could not find this entry in backend storage
+
+=back
+
+=cut
+
+sub _queue_task {
+	my $self = shift;
+	while(@_) {
+		my ($evt, $task) = splice @_, 0, 2;
+		push @{$self->{_task_pending}->{$evt}}, $task;
 	}
 	return $self;
 }
@@ -117,9 +202,21 @@ Pass the given event through to any defined callbacks.
 sub _event {
 	my $self = shift;
 	my $ev = shift;
-	$self->{_callback}->{$ev}->(@_) if exists $self->{_callback}->{$ev};
+	if(my $task = shift @{$self->{_task_pending}->{$ev}}) {
+		$task->($self, @_);
+	}
+
+	if(exists $self->{_callback}->{$ev}) {
+		$_->($self, @_) for @{$self->{_callback}->{$ev}};
+	}
+
 # also alias before_XXX to on_XXX
-	$self->{_callback}->{"on_$1"}->(@_) if $ev =~ /^before_(.*)$/ && exists $self->{_callback}->{"on_$1"};
+	if($ev =~ /^before_(.*)$/) {
+		$ev = "on_$1";
+		if(exists $self->{_callback}->{$ev}) {
+			$_->($self, @_) for @{$self->{_callback}->{$ev}};
+		}
+	}
 	return $self;
 }
 
@@ -158,6 +255,7 @@ Takes a hashref, and sets the flag so that ->commit does the insert.
 sub create {
 	my $class = shift;
 	my $self = $class->new(@_, create => 1);
+	$self->commit;
 	return $self;
 }
 
@@ -206,11 +304,16 @@ sub _update {
 	my $self = shift;
 	my %args = @_;
 
+	$self->{_active_write} = 1;
 	my $primary = $self->_entity->primary;
 	$self->_storage->store(
 		entity	=> $self->_entity,
 		id	=> $self->id,
-		data	=> $self->_extract_data
+		data	=> $self->_extract_data,
+		on_complete	=> $self->sap(sub {
+			my $self = shift;
+			$self->{_active_write} = 0;
+		})
 	);
 	return $self;
 }
@@ -227,7 +330,7 @@ sub _select {
 
 	my $primary = $self->_entity->primary;
 	die "Undef primary element found for $self" if grep !defined, $primary;
-
+return $self;
 	my $data = $self->_storage->read(
 		entity	=> $self->_entity,
 		id	=> $self->id,
@@ -265,13 +368,16 @@ sub _insert {
 	# FIXME haxx
 	delete $self->{$primary} unless defined $self->{$primary};
 
-	my $id = $self->_storage->create(
+	$self->_storage->create(
 		entity	=> $self->_entity,
 		data	=> $self->_extract_data,
+		on_complete => sub {
+			my $v = shift;
+			$self->{id} = $v;
+			delete $self->{_insert_required};
+			$args{on_complete}->($v) if $args{on_complete};
+		}
 	);
-	#warn "Had ID $id for $self";
-	$self->{id} = $id;
-	delete $self->{_insert_required};
 	return $self;
 }
 
@@ -285,6 +391,13 @@ sub commit {
 	my $self = shift;
 	$self->_insert(@_) if $self->_pending_insert;
 	$self->_update(@_) if $self->_pending_update;
+	return $self;
+}
+
+sub then {
+	my $self = shift;
+	$self->commit;
+	push @{$self->{_callback}->{on_load}}, @_;
 	return $self;
 }
 
@@ -343,6 +456,22 @@ sub fromID {
 	$self->{$_} = $id foreach $self->_entity->primary;
 	$self->{_incomplete} = 1;
 	return EntityModel::Error->new('Permission denied') if $self->can('hasAccess') && !$self->hasAccess('read');
+	return $self;
+}
+
+sub _request_load {
+	my $self = shift;
+	my %args = @_;
+	if($self->{_incomplete}) {
+		$self->_queue_task(
+			on_load		=> $args{on_complete}
+		) if exists $args{on_complete};
+		$self->_queue_task(
+			on_error	=> $args{on_error}
+		) if exists $args{on_error};
+	} else {
+		$args{on_complete}->($self) if exists $args{on_complete};
+	}
 	return $self;
 }
 

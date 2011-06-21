@@ -1,6 +1,6 @@
 package EntityModel::Storage;
 BEGIN {
-  $EntityModel::Storage::VERSION = '0.010';
+  $EntityModel::Storage::VERSION = '0.011';
 }
 use EntityModel::Class {
 	transaction	=> { type => 'array', subclass => 'EntityModel::Transaction' },
@@ -12,7 +12,7 @@ EntityModel::Storage - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 
@@ -20,7 +20,7 @@ See L<EntityModel>.
 
 =head1 DESCRIPTION
 
-See L<EntityModel>.
+See L<EntityModel> for more details.
 
 =head1 METHODS
 
@@ -30,10 +30,73 @@ See L<EntityModel>.
 
 Register with L<EntityModel> so that callbacks trigger when further definitions are loaded/processed.
 
+The base storage engine doesn't provide any callbacks - but we define the method anyway so that we don't
+need to check for ->can.
+
 =cut
 
 sub register {
 	my $class = shift;
+}
+
+=head2 apply_model
+
+Apply the given model.
+
+=cut
+
+sub apply_model {
+	my $self = shift;
+	my $model = shift;
+	$self->apply_model_and_schema($model);
+}
+
+=head2 apply_model_and_schema
+
+=cut
+
+sub apply_model_and_schema {
+	my $self = shift;
+	my $model = shift;
+
+	my @pending = $model->entity->list;
+	my @existing;
+	my @pendingNames = map { $_->name } @pending;
+
+	ITEM:
+	while(@pending) {
+		my $entity = shift(@pending);
+		# Remove current entry so we don't match ourselves when checking deps
+		shift(@pendingNames);
+
+		my @deps = $entity->dependencies;
+
+		# Check that all dependencies exist
+		foreach my $dep (@deps) {
+			# Include current entity in list of available entries, so that we can allow self-reference
+			unless(grep { $dep->name ~~ $_->name } @pending, @existing, $entity) {
+				logError("%s unresolved (pending %s, deps %s for %s)", $dep->name, join(',', @pendingNames), join(',', @deps), $entity->name);
+				die "Dependency error";
+			}
+		}
+
+		# Check that all dependencies are complete
+		my @unsatisfied = grep { $_->name ~~ \@pendingNames } @deps;
+		if(@unsatisfied) {
+			logInfo("%s has %d unsatisfied deps, postponing: %s", $entity->name, scalar @unsatisfied, join(',',@unsatisfied));
+			push @pending, $entity;
+			push @pendingNames, $entity->name;
+			next ITEM;
+		}
+
+		# Apply this entity and add more detail to the error message if it fails:
+		try { $self->apply_entity($entity); }
+		catch { die "Failed to apply entity " . $entity->name . " (pending " . join(',', @pendingNames) . "): " . ($_ // 'undef'); };
+
+		# Record this entry so we pick it up in later dependency checks
+		push @existing, $entity;
+	}
+	return $self;
 }
 
 =head2 read
@@ -275,6 +338,64 @@ sub DESTROY {
 1;
 
 __END__
+
+=head1 SUBCLASSING
+
+This module provides the abstract base class for all storage modules. Here's how to build
+your own.
+
+=head2 INITIAL SETUP
+
+L</setup> will be called when this storage class is attached to the model via
+L<EntityModel/add_storage>, and this will receive the $model as the first parameter along
+with any additional options. Typically this will include storage-specific connection
+information.
+
+Each entity added to the model will be applied to the storage engine through L</apply_entity>.
+It is the responsibility of the storage engine to verify that it is able to handle the given
+entities and fields, either creating the underlying storage structure (database tables, etc.)
+or raising an error if this isn't appropriate.
+
+=head2 USAGE
+
+Most of the work is handled by the following methods:
+
+=over 4
+
+=item * L</read> - retrieves data from the backend storage engine for the given entity and ID
+
+=item * L</create> - writes new data to storage for given entity, data and optional ID
+
+=item * L</store> - updates an existing entry in storage for the given entity, data and ID
+
+=item * L</remove> - deletes an existing entry from storage, takes entity and ID
+
+=back
+
+Each of these applies to a single entity instance only. Since they operate on a callback
+basis, multiple operations can be aggregated if desired: 
+
+ select * from storage where id in (x,y,z)
+
+Two callbacks are required for each of the above operations:
+
+=over 4
+
+=item * on_complete - the operation completed successfully and the data is guaranteed to
+have been written to storage. The strength of this guarantee depends on the storage engine
+but it should be safe for calling code to assume that any further operations will not result
+in losing the data - for example, a database engine would commit the data before sending this
+event.
+
+=item * on_fail - the operation was not successful and storage has been rolled back to
+the previous state. This could be the case when trying to create an item with a pre-existing
+ID or possibly transaction deadlock, although in the latter case it would be preferable to
+attempt retry some reasonable number of times before signalling a failure.
+
+=back
+
+Neither callback is mandatory - default behaviour if there is no C<on_fail> is to die() on failure,
+and no-op if C<on_complete> is not specified.
 
 =head1 AUTHOR
 

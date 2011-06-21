@@ -1,13 +1,13 @@
 ---
-abstract: 'Define and manage entities across languages'
+abstract: 'Cross-language event-driven ORM'
 author:
   - 'Tom Molesworth <cpan@entitymodel.com>'
 build_requires:
   Test::Class: 0
 configure_requires:
-  ExtUtils::MakeMaker: 6.31
+  ExtUtils::MakeMaker: 6.30
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.200004, CPAN::Meta::Converter version 2.110440'
+generated_by: 'Dist::Zilla version 4.200007, CPAN::Meta::Converter version 2.110930'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -17,11 +17,11 @@ requires:
   Cache::Memcached::Fast: 0
   DBI: 0
   DateTime::Format::Duration: 0
-  EntityModel::Class: 0.004
+  EntityModel::Class: 0.008
   EntityModel::Log: 0.002
   JSON::XS: 2.00
   Module::Load: 0
   Template: 2.18
   XML::XPath: 1.00
   perl: 5.010
-version: 0.010
+version: 0.011

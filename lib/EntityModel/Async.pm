@@ -1,14 +1,13 @@
-package EntityModel::Entity::Constraint;
+package EntityModel::Async;
 BEGIN {
-  $EntityModel::Entity::Constraint::VERSION = '0.011';
+  $EntityModel::Async::VERSION = '0.011';
 }
 use EntityModel::Class {
-	detail		=> { type => 'string' },
 };
 
 =head1 NAME
 
-EntityModel::Entity::Constraint - constraint support for L<EntityModel>
+EntityModel::Async - asynchronous helper functions for L<EntityModel>
 
 =head1 VERSION
 
@@ -16,13 +15,16 @@ version 0.011
 
 =head1 SYNOPSIS
 
-See L<EntityModel>.
+ use EntityModel;
 
 =head1 DESCRIPTION
 
-See L<EntityModel>.
+
+=head1 METHODS
 
 =cut
+
+use EntityModel::Gather;
 
 1;
 

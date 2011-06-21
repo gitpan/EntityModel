@@ -1,6 +1,6 @@
 package EntityModel::Support;
 BEGIN {
-  $EntityModel::Support::VERSION = '0.010';
+  $EntityModel::Support::VERSION = '0.011';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 
@@ -46,26 +46,31 @@ sub apply_model {
 	my $model = shift;
 
 	my @pending = $model->entity->list;
+	my @pendingNames = map { $_->name } @pending;
 	my @existing;
 	ITEM:
 	while(@pending) {
 		my $entity = shift(@pending);
+		shift(@pendingNames);
 
 		my @deps = $entity->dependencies;
-		my @pendingNames = map { $_->name } @pending;
 
 		# Include current entity in list of available entries, so that we can allow self-reference
+		DEP:
 		foreach my $dep (@deps) {
-			unless(grep { $dep->name ~~ $_->name } @pending, @existing, $entity) {
+			next DEP if $dep->name ~~ $entity->name;
+			next DEP if grep { $dep->name ~~ $_ } @pendingNames;
+			unless(grep { $dep->name ~~ $_->name } @existing) {
 				logError("%s unresolved (pending %s, deps %s for %s)", $dep->name, join(',', @pendingNames), join(',', @deps), $entity->name);
 				die "Dependency error";
 			}
 		}
 
-		my @unsatisfied = grep { $_ ~~ [ map { $_->name } @deps ] } @pendingNames;
+		my @unsatisfied = grep { $_->name ~~ \@pendingNames } @deps;
 		if(@unsatisfied) {
 			logInfo("%s has %d unsatisfied deps, postponing: %s", $entity->name, scalar @unsatisfied, join(',',@unsatisfied));
 			push @pending, $entity;
+			push @pendingNames, $entity->name;
 			next ITEM;
 		}
 

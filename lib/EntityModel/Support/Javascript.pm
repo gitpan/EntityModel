@@ -1,6 +1,6 @@
 package EntityModel::Support::Javascript;
 BEGIN {
-  $EntityModel::Support::Javascript::VERSION = '0.010';
+  $EntityModel::Support::Javascript::VERSION = '0.011';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support::Javascript - Javascript language support for L<EntityModel
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 

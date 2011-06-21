@@ -2,20 +2,20 @@
 use strict;
 use warnings;
 
-BEGIN { require 5.010; }
+use 5.010;
 
-use ExtUtils::MakeMaker 6.31;
+use ExtUtils::MakeMaker 6.30;
 
 
 
 my %WriteMakefileArgs = (
-  'ABSTRACT' => 'Define and manage entities across languages',
+  'ABSTRACT' => 'Cross-language event-driven ORM',
   'AUTHOR' => 'Tom Molesworth <cpan@entitymodel.com>',
   'BUILD_REQUIRES' => {
     'Test::Class' => '0'
   },
   'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.31'
+    'ExtUtils::MakeMaker' => '6.30'
   },
   'DISTNAME' => 'EntityModel',
   'EXE_FILES' => [
@@ -28,14 +28,14 @@ my %WriteMakefileArgs = (
     'Cache::Memcached::Fast' => '0',
     'DBI' => '0',
     'DateTime::Format::Duration' => '0',
-    'EntityModel::Class' => '0.004',
+    'EntityModel::Class' => '0.008',
     'EntityModel::Log' => '0.002',
     'JSON::XS' => '2.00',
     'Module::Load' => '0',
     'Template' => '2.18',
     'XML::XPath' => '1.00'
   },
-  'VERSION' => '0.010',
+  'VERSION' => '0.011',
   'test' => {
     'TESTS' => 't/*.t'
   }

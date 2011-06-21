@@ -1,6 +1,6 @@
 package EntityModel::Support::Template;
 BEGIN {
-  $EntityModel::Support::Template::VERSION = '0.010';
+  $EntityModel::Support::Template::VERSION = '0.011';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Support}],
@@ -14,7 +14,7 @@ EntityModel::Support::Template - generic language support via L<Template> output
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 

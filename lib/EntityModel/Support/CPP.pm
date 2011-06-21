@@ -1,6 +1,6 @@
 package EntityModel::Support::CPP;
 BEGIN {
-  $EntityModel::Support::CPP::VERSION = '0.010';
+  $EntityModel::Support::CPP::VERSION = '0.011';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support::CPP - C++ language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 

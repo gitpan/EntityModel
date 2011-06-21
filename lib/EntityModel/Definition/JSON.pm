@@ -1,6 +1,6 @@
 package EntityModel::Definition::JSON;
 BEGIN {
-  $EntityModel::Definition::JSON::VERSION = '0.010';
+  $EntityModel::Definition::JSON::VERSION = '0.011';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Definition}],
@@ -12,7 +12,7 @@ EntityModel::Definition::JSON - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.010
+version 0.011
 
 =head1 SYNOPSIS
 
