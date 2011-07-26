@@ -1,12 +1,13 @@
 package EntityModel::Model;
 BEGIN {
-  $EntityModel::Model::VERSION = '0.011';
+  $EntityModel::Model::VERSION = '0.012';
 }
 use EntityModel::Class {
+	_isa		=> [qw{Mixin::Event::Dispatch}],
 	name		=> { type => 'string' },
 	handler		=> { type => 'hash' },
 	entity		=> { type => 'array', subclass => 'EntityModel::Entity' },
-# Private mapping for quick entity name lookup
+# Private mapping for entity name lookup
 	entity_map	=> { type => 'hash', scope => 'private', watch => {
 		entity => 'name'
 	} },
@@ -18,7 +19,7 @@ EntityModel::Model - base class for model definitions
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 

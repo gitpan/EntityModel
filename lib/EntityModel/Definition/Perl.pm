@@ -1,6 +1,6 @@
 package EntityModel::Definition::Perl;
 BEGIN {
-  $EntityModel::Definition::Perl::VERSION = '0.011';
+  $EntityModel::Definition::Perl::VERSION = '0.012';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Definition}],
@@ -12,7 +12,7 @@ EntityModel::Definition::Perl - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 

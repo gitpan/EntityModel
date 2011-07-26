@@ -29,7 +29,7 @@ my @cases = (
 	},
 # Select, table definition, where clause
 	q{select id from table where id = 3} => {
-		prepared => q{select id from table where id = ?},
+		prepared => q{select id from table where id = $1},
 		parameters => [3],
 		query => [
 			select	=> 'id',
@@ -38,7 +38,7 @@ my @cases = (
 		]
 	},
 	q{select id from table where (name = 'test' and id = 3)} => {
-		prepared => q{select id from table where (name = ? and id = ?)},
+		prepared => q{select id from table where (name = $1 and id = $2)},
 		parameters => ['test', 3],
 		query => [
 			select	=> 'id',
@@ -60,7 +60,7 @@ my @cases = (
 		]
 	},
 	q{select sum(total) as total from table where created > '2010-01-01' group by category} => {
-		prepared => q{select sum(total) as total from table where created > ? group by category},
+		prepared => q{select sum(total) as total from table where created > $1 group by category},
 		parameters => ['2010-01-01'],
 		query => [
 			select	=> { total => \'sum(total)' },
@@ -72,7 +72,7 @@ my @cases = (
 		]
 	},
 	q{select category, sum(total) as total from table where created > '2010-01-01' group by category order by category} => {
-		prepared => q{select category, sum(total) as total from table where created > ? group by category order by category},
+		prepared => q{select category, sum(total) as total from table where created > $1 group by category order by category},
 		parameters => ['2010-01-01'],
 		query => [
 			select	=> [ 'category', { total => \'sum(total)' } ],
@@ -85,7 +85,7 @@ my @cases = (
 		]
 	},
 	q{select category, sum(total) as total from table where created > '2010-01-01' group by category order by category desc limit 5} => {
-		prepared => q{select category, sum(total) as total from table where created > ? group by category order by category desc limit 5},
+		prepared => q{select category, sum(total) as total from table where created > $1 group by category order by category desc limit 5},
 		parameters => ['2010-01-01'],
 		query => [
 			select	=> [ 'category', { total => \'sum(total)' } ],
@@ -100,7 +100,7 @@ my @cases = (
 	},
 # Insert
 	q{insert into table (id, something) values (3, 'test')} => {
-		prepared => q{insert into table (id, something) values (?, ?)},
+		prepared => q{insert into table (id, something) values ($1, $2)},
 		parameters => [3, 'test'],
 		query => [
 			'insert into'	=> 'table',
@@ -111,7 +111,7 @@ my @cases = (
 		]
 	},
 	q{insert into table (id, something) values (3, 'test') returning id} => {
-		prepared => q{insert into table (id, something) values (?, ?) returning id},
+		prepared => q{insert into table (id, something) values ($1, $2) returning id},
 		parameters => [3, 'test'],
 		query => [
 			'insert into'	=> 'table',
@@ -124,7 +124,7 @@ my @cases = (
 	},
 # Update
 	q{update table set something = 3, other = 'test' where id = 2} => {
-		prepared => q{update table set something = ?, other = ? where id = ?},
+		prepared => q{update table set something = $1, other = $2 where id = $3},
 		parameters => [3, 'test', 2],
 		query => [
 			'update'	=> 'table',

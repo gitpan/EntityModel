@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl;
 BEGIN {
-  $EntityModel::Support::Perl::VERSION = '0.011';
+  $EntityModel::Support::Perl::VERSION = '0.012';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Support}],
@@ -15,7 +15,7 @@ EntityModel::Support::Perl - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -273,24 +273,23 @@ sub load_package {
 	my ($storage) = $self->model->storage->list;
 	die "no storage?" unless $storage;
 
-	eval {
+	try {
 		local $SIG{__DIE__};
 		Module::Load::load($pkg);
-	};
-	if($@) {
-		logInfo("Failed: [%s]", $@);
-		# Couldn't read the module - either invalid, or missing. Create it.
-		no strict 'refs';
-		push @{$pkg . '::ISA'}, $self->baseclass;
-	} else {
-		logInfo("Worked");
-		# Load the package from disk
+
 		unless(eval { $pkg->isa($self->baseclass); }) {
 			# Doesn't inherit as expected, add the base module anyway
 			no strict 'refs';
 			push @{$pkg . '::ISA'}, $self->baseclass;
 		}
-	}
+	} catch {
+		logWarning("Failed: [%s]", $_) unless /^Can't locate /;
+
+		# Couldn't read the module - either invalid, or missing. Create it.
+		no strict 'refs';
+		push @{$pkg . '::ISA'}, $self->baseclass;
+	};
+
 	{
 		no strict 'refs';
 		*{$pkg . '::()'} = sub () { } unless *{ $pkg . '::()' };

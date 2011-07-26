@@ -21,8 +21,8 @@ for my $entity_count (qw(1 2 5 10 20 50 100 200 500 1000 2000)) {
 		++$name;
 	}
 	my $start = Time::HiRes::time;
-	my $now = Time::HiRes::time;
 	my $model = EntityModel->new;
+	my $now = Time::HiRes::time;
 	$model->load_from(
 		Perl	=> {
 			"name"	=> "mymodel",

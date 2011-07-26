@@ -1,8 +1,10 @@
 package EntityModel::Deferred;
 BEGIN {
-  $EntityModel::Deferred::VERSION = '0.011';
+  $EntityModel::Deferred::VERSION = '0.012';
 }
 use EntityModel::Class {
+	_isa	=> [qw(Mixin::Event::Dispatch)],
+	event_queue	=> { type => 'array', subclass => 'arrayref' },
 };
 
 =head1 NAME
@@ -11,11 +13,12 @@ EntityModel::Deferred - value which is not yet ready
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
- use EntityModel;
+ use EntityModel::Deferred;
+ my $deferred = EntityModel::Deferred->new;
 
 =head1 DESCRIPTION
 
@@ -24,50 +27,47 @@ version 0.011
 
 =cut
 
+=head2 value
+
+=cut
+
 sub new {
-	my $class = shift;
-	my $self = bless {
-		event	=> {
-			ready	=> [ ],
-			error	=> [ ],
-		}
-	}, $class;
+	my $self = shift->SUPER::new;
+	my %args = @_;
+	$self->provide_value(delete $args{value}) if exists $args{value};
 	return $self;
 }
-
-sub queue_callback {
-	my $self = shift;
-	while(@_) {
-		my ($k, $v) = splice @_, 0, 2;
-		push @{$self->{event}->{$k}}, $v;
-	}
-	return $self;
-}
-
 sub value {
 	my $self = shift;
 	die "Value is not yet ready" unless exists $self->{value};
 	return $self->{value};
 }
 
+=head2 provide_value
+
+=cut
+
 sub provide_value {
 	my $self = shift;
 	$self->{value} = shift;
-	$self->dispatch('ready');
+	$self->invoke_event('ready' => $self->{value});
+	return $self;
 }
+
+=head2 raise_error
+
+=cut
 
 sub raise_error {
 	my $self = shift;
-	$self->dispatch('error');
+	$self->invoke_event('error' => @_);
 }
 
-sub dispatch {
+sub add_handler {
 	my $self = shift;
-	my $evt = shift;
-	foreach my $handler (@{ $self->{event}->{$evt} }) {
-		$handler->($self);
-	}
-	return $self;
+	my $rslt = $self->SUPER::add_handler_for_event(@_);
+	$self->invoke_event('ready' => $self->{value}) if exists $self->{value};
+	return $rslt;
 }
 
 1;

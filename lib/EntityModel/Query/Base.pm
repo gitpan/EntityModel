@@ -1,6 +1,6 @@
 package EntityModel::Query::Base;
 BEGIN {
-  $EntityModel::Query::Base::VERSION = '0.011';
+  $EntityModel::Query::Base::VERSION = '0.012';
 }
 use EntityModel::Class;
 
@@ -10,7 +10,7 @@ EntityModel::Query::Base - base class for L<EntityModel::Query>-derived componen
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -196,11 +196,12 @@ sub sqlAndParameters {
 
 	my $sql = '';
 	my @bind;
+	my $id = 1;
 	foreach my $part (@query) {
 		my $type = ref $part;
 		if($type) {
 			push @bind, $self->decantValue($part);
-			$sql .= '?';
+			$sql .= '$'. $id++;
 		} else {
 			$sql .= $part;
 		}

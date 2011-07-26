@@ -1,6 +1,6 @@
 package EntityModel::Query;
 BEGIN {
-  $EntityModel::Query::VERSION = '0.011';
+  $EntityModel::Query::VERSION = '0.012';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Query::Base}],
@@ -16,6 +16,7 @@ use EntityModel::Class {
 	'order'		=> { type => 'array', subclass => 'EntityModel::Query::OrderField' },
 	'returning'	=> { type => 'array', subclass => 'EntityModel::Query::ReturningField' },
 	'db'		=> { type => 'EntityModel::DB', scope => 'private' },
+	'transaction'	=> { type => 'EntityModel::Transaction', scope => 'private' },
 };
 
 =head1 NAME
@@ -24,7 +25,7 @@ EntityModel::Query - handle SQL queries
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -139,6 +140,8 @@ sub parseSpec {
 		# FIXME haxx
 		if($k eq 'db') {
 			$self->db($v);
+		} elsif($k eq 'transaction') {
+			$self->transaction($v);
 		} elsif(my $handler = $self->can_parse($k)) {
 			$handler->($self, $v);
 		} else {

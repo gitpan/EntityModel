@@ -58,6 +58,8 @@ lib/EntityModel/Support/Perl.pm
 lib/EntityModel/Support/Perl/Base.pm
 lib/EntityModel/Support/Template.pm
 lib/EntityModel/Template.pm
+lib/EntityModel/Test/Cache.pm
+lib/EntityModel/Test/Storage.pm
 lib/EntityModel/Transaction.pm
 t/00-pod.t
 t/00-use.t
@@ -73,3 +75,5 @@ t/plugin.t
 t/query.t
 t/storage.t
 t/template.t
+t/test-cache.t
+t/test-storage.t

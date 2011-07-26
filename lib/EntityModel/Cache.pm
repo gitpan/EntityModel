@@ -1,6 +1,6 @@
 package EntityModel::Cache;
 BEGIN {
-  $EntityModel::Cache::VERSION = '0.011';
+  $EntityModel::Cache::VERSION = '0.012';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Cache - base class for L<EntityModel> caching support
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -90,6 +90,14 @@ sub atomic { die 'Virtual method' }
 1;
 
 __END__
+
+=head1 SEE ALSO
+
+=over 4
+
+=item * L<CHI> - Unified cache handling interface
+
+=back
 
 =head1 AUTHOR
 

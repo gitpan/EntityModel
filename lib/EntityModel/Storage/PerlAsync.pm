@@ -1,6 +1,6 @@
 package EntityModel::Storage::PerlAsync;
 BEGIN {
-  $EntityModel::Storage::PerlAsync::VERSION = '0.011';
+  $EntityModel::Storage::PerlAsync::VERSION = '0.012';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage::Perl}],
@@ -13,7 +13,7 @@ EntityModel::Storage::PerlAsync - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -124,7 +124,7 @@ sub create {
 	$self->loop->later($self->sap(sub {
 		my $self = shift;
 		my $v = $self->SUPER::create(%args);
-		warn "Creating $v\n";
+#		warn "Creating $v\n";
 		$complete->($v) if $complete;
 	}));
 	return $self;

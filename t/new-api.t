@@ -4,7 +4,8 @@ use Test::More tests => 24;
 use Test::Deep;
 
 use EntityModel;
-EntityModel::Log->instance->min_level(0);
+# EntityModel::Log->instance->min_level(0);
+EntityModel::Log->instance->disabled(1);
 
 check_json();
 check_xml();

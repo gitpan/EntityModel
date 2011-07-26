@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 
-use 5.010;
+
 
 use ExtUtils::MakeMaker 6.30;
 
@@ -25,17 +25,17 @@ my %WriteMakefileArgs = (
   'LICENSE' => 'perl',
   'NAME' => 'EntityModel',
   'PREREQ_PM' => {
-    'Cache::Memcached::Fast' => '0',
-    'DBI' => '0',
+    'CPS' => '0.10',
     'DateTime::Format::Duration' => '0',
     'EntityModel::Class' => '0.008',
     'EntityModel::Log' => '0.002',
     'JSON::XS' => '2.00',
+    'Mixin::Event::Dispatch' => '0.002',
     'Module::Load' => '0',
     'Template' => '2.18',
     'XML::XPath' => '1.00'
   },
-  'VERSION' => '0.011',
+  'VERSION' => '0.012',
   'test' => {
     'TESTS' => 't/*.t'
   }

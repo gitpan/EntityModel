@@ -1,8 +1,10 @@
 package EntityModel::Storage;
 BEGIN {
-  $EntityModel::Storage::VERSION = '0.011';
+  $EntityModel::Storage::VERSION = '0.012';
 }
 use EntityModel::Class {
+	_isa		=> [qw(Mixin::Event::Dispatch)],
+	entity		=> { type => 'array', subclass => 'EntityModel::Entity' },
 	transaction	=> { type => 'array', subclass => 'EntityModel::Transaction' },
 };
 
@@ -12,7 +14,7 @@ EntityModel::Storage - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -53,49 +55,89 @@ sub apply_model {
 
 =head2 apply_model_and_schema
 
+Apply the given model to the storage layer.
+
+This delegates most of the work to L</apply_entity>.
+
 =cut
 
 sub apply_model_and_schema {
 	my $self = shift;
 	my $model = shift;
+	my %args = @_;
 
+	# Start off assuming that we need all the listed entities
 	my @pending = $model->entity->list;
-	my @existing;
+	# Nothing applied yet (should be $self->entity->list)
+	my %existing;
 	my @pendingNames = map { $_->name } @pending;
 
-	ITEM:
-	while(@pending) {
+	my $code;
+	# Called when everything's been applied successfully
+	my $done; $done = sub {
+		$done = sub { die "Tried to hit the same completion callback twice\n" };
+		warn "have done! <<<<<<<<<<<<<<<<<\n";
+		$args{on_complete}->() if exists $args{on_complete};
+		0
+	};
+	my %incomplete;
+	# Process a single entity
+	$code = sub {
+		# We may be a leftover event, bail out if there's nothing to do
+		unless(@pending) {
+			return 1 if keys %incomplete; # try us again later
+			$done->();
+			return 1; # all complete
+		}
+
+		# Next item in queue, no idea what state it's in yet
 		my $entity = shift(@pending);
-		# Remove current entry so we don't match ourselves when checking deps
+
+		# Also remove current entry so we don't match ourselves when checking deps
 		shift(@pendingNames);
 
-		my @deps = $entity->dependencies;
+		# If we've seen this one before, assume it's done
+		# FIXME Diff the entities
+		return $code->() if exists $existing{$entity->name};
 
-		# Check that all dependencies exist
-		foreach my $dep (@deps) {
-			# Include current entity in list of available entries, so that we can allow self-reference
-			unless(grep { $dep->name ~~ $_->name } @pending, @existing, $entity) {
-				logError("%s unresolved (pending %s, deps %s for %s)", $dep->name, join(',', @pendingNames), join(',', @deps), $entity->name);
+		{ # Dependency handling
+			my @deps = map { $_->name } $entity->dependencies;
+			# Include ourselves in the list in case anyone else has a dependency on us
+			my %expected = %existing; @expected{map { $_->name } @pending, $entity} = ();
+			if(my @unresolved = grep { !exists $expected{$_} } @deps, $entity->name) {
+				logError("%s unresolved (pending %s, deps %s for %s)", $_, join(',', @pendingNames), join(',', @deps), $entity->name) for @unresolved;
 				die "Dependency error";
+			}
+
+			# Check that all dependencies are complete
+			delete @expected{$entity->name, keys %existing};
+			if(my @unsatisfied = grep { exists $expected{$_} } @deps) {
+				logInfo("%s has %d unsatisfied deps, postponing: %s", $entity->name, scalar @unsatisfied, join(',',@unsatisfied));
+				push @pending, $entity;
+				push @pendingNames, $entity->name;
+				return $code->();
 			}
 		}
 
-		# Check that all dependencies are complete
-		my @unsatisfied = grep { $_->name ~~ \@pendingNames } @deps;
-		if(@unsatisfied) {
-			logInfo("%s has %d unsatisfied deps, postponing: %s", $entity->name, scalar @unsatisfied, join(',',@unsatisfied));
-			push @pending, $entity;
-			push @pendingNames, $entity->name;
-			next ITEM;
-		}
-
 		# Apply this entity and add more detail to the error message if it fails:
-		try { $self->apply_entity($entity); }
-		catch { die "Failed to apply entity " . $entity->name . " (pending " . join(',', @pendingNames) . "): " . ($_ // 'undef'); };
-
-		# Record this entry so we pick it up in later dependency checks
-		push @existing, $entity;
-	}
+		return try {
+			$incomplete{$entity->name} = $entity;
+			$self->apply_entity(
+				$entity,
+				on_complete => sub {
+					# Record this entry so we pick it up in later dependency checks
+					$existing{$entity->name} = $entity;
+					$code->();
+					return 0;
+				}
+			);
+			return 0;
+		} catch {
+			die "Failed to apply entity " . $entity->name . " (pending " . join(',', @pendingNames) . "): " . ($_ // 'undef');
+			return 1;
+		};
+	};
+	1 while $code->();
 	return $self;
 }
 
@@ -327,6 +369,16 @@ sub transaction_end {
 	die "No transaction in progress" unless $self->transaction->count;
 	die "Mismatched transaction" unless $tran ~~ $self->transaction->last;
 	$self->transaction->pop;
+	return $self;
+}
+
+sub backend_ready { shift->{backend_ready} }
+
+sub wait_for_backend {
+	my $self = shift;
+	my $code = shift;
+	return $code->($self) if $self->backend_ready;
+	$self->add_handler_for_event( backend_ready => sub { $code->(@_); 0 });
 	return $self;
 }
 

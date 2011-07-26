@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl::Base;
 BEGIN {
-  $EntityModel::Support::Perl::Base::VERSION = '0.011';
+  $EntityModel::Support::Perl::Base::VERSION = '0.012';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support::Perl::Base - base class for entity instances
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -29,9 +29,10 @@ asynchronous requests via chained method accessors.
 Given a chain $book->author->address->city, where the first three entries are regular entities
 and the last item in the chain is an accessor for a scalar method:
 
-First, we check $book. If it is loaded (to the extent that ->author contains an entity instance),
-then we can use this existing instance. If not, we instantiate a new entity of this type, marked
-as incomplete and as a pending request, and continue.
+First, we check $book to see whether it has an author yet. If the author information is loaded
+(to the extent that ->author contains an entity instance), then we can use this existing instance.
+If not, we instantiate a new entity of this type, marked as incomplete and as a pending request, and
+continue.
 
 This means that a chain where some of the elements can be null is still valid. As data is populated,
 entries in this chain will be filled out, and cases where the foreign key value was null will end up
@@ -67,7 +68,7 @@ use DateTime;
 use DateTime::Format::Strptime;
 use Tie::Cache::LRU;
 
-sub _supported_callbacks { qw(before_commit after_load on_not_found) }
+sub _supported_callbacks { qw(before_commit after_load on_not_found on_create) }
 
 =head2 new
 
@@ -153,6 +154,8 @@ sub new {
 			$self->_insert(
 				on_complete	=> sub {
 					my $data = shift;
+					use Data::Dumper;
+#					warn "Created " . Dumper($data);
 					delete $self->{_incomplete};
 					$self->_event('on_create');
 				}
@@ -432,7 +435,7 @@ sub id {
 		return $self;
 	}
 	return $self->{id} if exists $self->{id};
-	logError({%$self});
+	logDebug({%$self});
 #	logDebug("Expect from " . $_) foreach $self->_entity->list_primary;
 	$self->{id} = join('-', map { $self->{$_} // 'undef' } $self->_entity->primary);
 	$self->{$_} = $self->{id} foreach $self->_entity->primary;

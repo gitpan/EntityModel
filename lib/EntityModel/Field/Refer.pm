@@ -1,6 +1,6 @@
 package EntityModel::Field::Refer;
 BEGIN {
-  $EntityModel::Field::Refer::VERSION = '0.011';
+  $EntityModel::Field::Refer::VERSION = '0.012';
 }
 use EntityModel::Class {
 	'entity'	=> { type => 'EntityModel::Entity' },
@@ -16,7 +16,7 @@ EntityModel::Field::Refer - foreign key support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 

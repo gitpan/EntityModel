@@ -6,10 +6,13 @@ use EntityModel::Class {
 	plugin		=> { type => 'array', subclass => 'EntityModel::Plugin' },
 	support		=> { type => 'array', subclass => 'EntityModel::Support' },
 	storage		=> { type => 'array', subclass => 'EntityModel::Storage' },
+	storage_queued	=> { type => 'array', subclass => 'EntityModel::Storage' },
+	cache		=> { type => 'array', subclass => 'EntityModel::Cache' },
+	cache_queued	=> { type => 'array', subclass => 'EntityModel::Cache' },
 	db		=> { type => 'EntityModel::DB' },
 };
 
-our $VERSION = '0.011';
+our $VERSION = '0.012';
 
 =head1 NAME
 
@@ -17,7 +20,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -220,16 +223,69 @@ Example:
 
 sub add_storage {
 	my ($self, $name, $v) = @_;
+	delete $self->{backend_ready};
 	logDebug("Load storage for [%s]", $name);
-	my $class = 'EntityModel::Storage::' . $name;
-	unless(eval { $class->can('new') }) {
+	my $class = $name;
+	try { Module::Load::load($class) } unless try { $class->can('new') };
+	unless(try { $class->can('new') }) {
+		$class = 'EntityModel::Storage::' . $name;
+		Module::Load::load($class);
+	}
+
+	my $obj = $class->new($self, $v);
+	$self->storage_queued->push($obj);
+	$self->add_handler_for_event(
+		backend_ready => sub {
+			my $self = shift;
+			$self->{backend_ready} = 1;
+			0 # one-shot
+		}
+	);
+	$obj->setup($v);
+	$obj->wait_for_backend($self->sap( sub {
+		my ($model, $obj) = @_;
+		$obj->apply_model($model);
+		$model->storage->push($model->storage_queued->shift);
+		$model->invoke_event(backend_ready =>) unless $model->storage_queued->count;
+		0; # one-shot event
+	}));
+	return $self;
+}
+
+sub backend_ready { shift->{backend_ready} }
+
+sub wait_for_backend {
+	my $self = shift;
+	my $code = shift;
+	return $code->($self) if $self->backend_ready;
+	$self->add_handler_for_event( backend_ready => sub { $code->(@_); 0 });
+	return $self;
+}
+
+=head2 add_cache
+
+Add backend cache provided by an L<EntityModel::Storage> subclass.
+
+Example:
+
+ $model->add_cache(PostgreSQL => { service => ... });
+
+=cut
+
+sub add_cache {
+	my ($self, $name, $v) = @_;
+	logDebug("Load cache for [%s]", $name);
+	my $class = $name;
+	try { Module::Load::load($class) } unless try { $class->can('new') };
+	unless(try { $class->can('new') }) {
+		$class = 'EntityModel::Cache::' . $name;
 		Module::Load::load($class);
 	}
 
 	my $obj = $class->new($self, $v);
 	$obj->setup($v);
 	$obj->apply_model($self);
-	$self->storage->push($obj);
+	$self->cache->push($obj);
 	return $self;
 }
 

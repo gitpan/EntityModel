@@ -11,6 +11,9 @@ my $model;
 # Load the model and Perl definitions within a BEGIN block. This is optional but allows
 # us to check that the loading works as expected.
 BEGIN {
+	# Turn off logging - if tests are failing and you want more info, remove this line
+	EntityModel::Log->instance->disabled(1);
+
 	$model = EntityModel->new->load_from(
 		XML => { string => q{
 <entitymodel>

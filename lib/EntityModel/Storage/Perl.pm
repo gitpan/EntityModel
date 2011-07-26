@@ -1,10 +1,9 @@
 package EntityModel::Storage::Perl;
 BEGIN {
-  $EntityModel::Storage::Perl::VERSION = '0.011';
+  $EntityModel::Storage::Perl::VERSION = '0.012';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage}],
-	entity		=> { type => 'array', subclass => 'EntityModel::Entity' },
 };
 
 =head1 NAME
@@ -13,7 +12,7 @@ EntityModel::Storage::Perl - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.011
+version 0.012
 
 =head1 SYNOPSIS
 
@@ -47,7 +46,15 @@ my %EntityMaxID;
 
 sub setup {
 	my $self = shift;
+	$self->add_handler_for_event(
+		backend_ready => sub {
+			my $self = shift;
+			$self->{backend_ready} = 1;
+			0 # one-shot
+		}
+	);
 #	my %args = %{+shift};
+	$self->invoke_event(backend_ready =>);
 	return $self;
 }
 
@@ -60,6 +67,7 @@ Set up this entity in storage, by adding it to the list of keys and clearing the
 sub apply_entity {
 	my $self = shift;
 	my $entity = shift;
+	my %args = @_;
 	die "Entity exists already: " . $entity->name if exists $EntityMap{$entity->name};
 
 	$self->entity->push($entity);
@@ -67,6 +75,7 @@ sub apply_entity {
 		entity	=> $entity,
 		max_id	=> 0,
 	};
+	$args{on_complete}->() if exists $args{on_complete};
 	return $self;
 }
 
@@ -160,7 +169,7 @@ returns the value immediately rather than asynchronously.
 sub _next_id {
 	my $self = shift;
 	my %args = @_;
-	die "Entity not found" unless exists $EntityMap{$args{entity}->name};
+	die "Entity " . $args{entity}->name . " not found, we have: " . join(',', sort keys %EntityMap) unless exists $EntityMap{$args{entity}->name};
 	$EntityMaxID{$args{entity}->name} ||= 0;
 	return ++$EntityMaxID{$args{entity}->name};
 }
