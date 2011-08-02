@@ -1,6 +1,6 @@
 package EntityModel::Storage::PerlAsync;
 BEGIN {
-  $EntityModel::Storage::PerlAsync::VERSION = '0.012';
+  $EntityModel::Storage::PerlAsync::VERSION = '0.013';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage::Perl}],
@@ -13,7 +13,7 @@ EntityModel::Storage::PerlAsync - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.012
+version 0.013
 
 =head1 SYNOPSIS
 

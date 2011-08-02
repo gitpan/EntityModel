@@ -3,6 +3,8 @@ use strict;
 use warnings;
 use 5.010;
 
+# Warning: This is an incomplete example. Please see the documentation or t/*.t files instead.
+
 use EntityModel;
 
 =pod
@@ -50,6 +52,22 @@ sub done {
 	$self->{on_done} = $code;
 	return $self;
 }
+
+package Entity::Country;
+use parent -norequire => 'Mixin::Deferrable';
+
+sub create {
+	my $class = shift;
+
+	my $self = bless {
+		id => 14
+	}, $class;
+	$self->{finished} = 1;
+	return $self;
+}
+
+sub id { shift->{id} }
+sub name { shift->{name} }
 
 package Entity::Address;
 use parent -norequire => 'Mixin::Deferrable';
@@ -99,6 +117,7 @@ sub create {
 }
 
 sub id { shift->{id} }
+sub title { shift->{title} }
 
 #package Deferrable::Util;
 #use parent qw(Exporter);

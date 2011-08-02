@@ -1,3 +1,7 @@
+0.013     2011-08-02 02:33:36 Europe/London
+	Bug fix release: dropped Cache::Memcached::Fast dependency in last release but still had EntityModel::Cache::Memcached in place,
+	 and test files still referenced it. Also add a note to the async example file indicating that it's currently unfinished.
+
 0.012     2011-07-26 23:56:35 Europe/London
 	Provide EntityModel::Test::Storage and EntityModel::Test::Cache so that external modules
 	 can use a common testing interface to verify basic functionality.

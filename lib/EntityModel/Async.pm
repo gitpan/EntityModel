@@ -1,6 +1,6 @@
 package EntityModel::Async;
 BEGIN {
-  $EntityModel::Async::VERSION = '0.012';
+  $EntityModel::Async::VERSION = '0.013';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Async - asynchronous helper functions for L<EntityModel>
 
 =head1 VERSION
 
-version 0.012
+version 0.013
 
 =head1 SYNOPSIS
 

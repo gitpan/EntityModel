@@ -1,6 +1,6 @@
 package EntityModel::Deferred;
 BEGIN {
-  $EntityModel::Deferred::VERSION = '0.012';
+  $EntityModel::Deferred::VERSION = '0.013';
 }
 use EntityModel::Class {
 	_isa	=> [qw(Mixin::Event::Dispatch)],
@@ -13,7 +13,7 @@ EntityModel::Deferred - value which is not yet ready
 
 =head1 VERSION
 
-version 0.012
+version 0.013
 
 =head1 SYNOPSIS
 
