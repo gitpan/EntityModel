@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 17;
+use Test::More tests => 18;
 use_ok('EntityModel::Query');
 use_ok('EntityModel::Model');
 
@@ -26,3 +26,5 @@ use_ok('EntityModel::Plugin');
 use_ok('EntityModel::Template');
 
 use_ok('EntityModel');
+
+use_ok('EntityModel::App');

@@ -1,6 +1,6 @@
 package EntityModel::Definition::JSON;
-BEGIN {
-  $EntityModel::Definition::JSON::VERSION = '0.013';
+{
+  $EntityModel::Definition::JSON::VERSION = '0.014';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Definition}],
@@ -12,7 +12,7 @@ EntityModel::Definition::JSON - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.013
+version 0.014
 
 =head1 SYNOPSIS
 
@@ -81,7 +81,7 @@ sub save_string {
 	my $self = shift;
 	my %args = @_;
 
-	return JSON::XS->new->encode($args{structure});
+	return JSON::XS->new->pretty->utf8->encode($self->structure_from_model($args{model}));
 }
 
 =head2 parse

@@ -1,6 +1,6 @@
 package EntityModel::Query;
-BEGIN {
-  $EntityModel::Query::VERSION = '0.013';
+{
+  $EntityModel::Query::VERSION = '0.014';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Query::Base}],
@@ -25,17 +25,30 @@ EntityModel::Query - handle SQL queries
 
 =head1 VERSION
 
-version 0.013
+version 0.014
 
 =head1 SYNOPSIS
 
  use EntityModel::Query;
+
+ # Provide a definition on instantiation:
  my $query = EntityModel::Query->new(
  	select	=> [qw(id name)]
 	from	=> 'table',
 	where	=> [ created => { '<' => '2010-01-01' } ],
 	limit	=> 5
  );
+
+ # or using chained methods:
+ my $query = EntityModel::Query->new
+ ->select( qw(id name) )
+ ->from( 'table' )
+ ->where(
+ 	created => { '<' => '2010-01-01' }
+ )
+ ->limit(5);
+
+ # Extract query as SQL
  my ($sql, @bind) = $query->sqlAndParameters;
  my $sth = $dbh->prepare($sql);
  $sth->execute(@bind);
@@ -97,14 +110,14 @@ use Carp qw/confess/;
 
 =head2 new
 
-Construct a new L<EntityModel::Query>. Most of the work is passed off to L<parseSpec>.
+Construct a new L<EntityModel::Query>. Most of the work is passed off to L<parse_spec>.
 
 =cut
 
 sub new {
 	my $class = shift;
 	my $self = bless { }, $class;
-	$self->parseSpec(@_) if @_;
+	$self->parse_spec(@_) if @_;
 	return $self;
 }
 
@@ -118,13 +131,13 @@ reblessed is invalid.
 
 sub type { confess "Virtual type - this is likely because you did not specify valid insert/select/delete criteria"; }
 
-=head2 parseSpec
+=head2 parse_spec
 
 Parse the specification we were given.
 
 =cut
 
-sub parseSpec {
+sub parse_spec {
 	my $self = shift;
 	my @details = @_;
 	SPEC:

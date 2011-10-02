@@ -1,3 +1,11 @@
+0.014     2011-10-02 03:43:40 Europe/London
+	Add the EntityModel::Collection and EntityModel::EntityCollection classes plus some basic tests.
+	Remove stray debug line in storage code.
+	Rename the rest of the EntityModel::Query methods to use_underscores instead of camelCase.
+	Add an example script for generating queries.
+	Initial SQL parser for converting raw SQL into an EntityModel::Query object.
+	Implemented the commandline client (basic functionality only so far).
+
 0.013     2011-08-02 02:33:36 Europe/London
 	Bug fix release: dropped Cache::Memcached::Fast dependency in last release but still had EntityModel::Cache::Memcached in place,
 	 and test files still referenced it. Also add a note to the async example file indicating that it's currently unfinished.

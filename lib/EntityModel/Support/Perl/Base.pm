@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl::Base;
-BEGIN {
-  $EntityModel::Support::Perl::Base::VERSION = '0.013';
+{
+  $EntityModel::Support::Perl::Base::VERSION = '0.014';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support::Perl::Base - base class for entity instances
 
 =head1 VERSION
 
-version 0.013
+version 0.014
 
 =head1 SYNOPSIS
 
@@ -394,6 +394,22 @@ sub commit {
 	my $self = shift;
 	$self->_insert(@_) if $self->_pending_insert;
 	$self->_update(@_) if $self->_pending_update;
+	return $self;
+}
+
+sub done {
+	my $self = shift;
+	return $self if $self->{failure};
+	my $code = shift;
+	$code->($self);
+	return $self;
+}
+
+sub fail {
+	my $self = shift;
+	return $self unless $self->{failure};
+	my $code = shift;
+	$code->($self, $self->{failure});
 	return $self;
 }
 

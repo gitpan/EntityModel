@@ -8,10 +8,15 @@ benchmark/model-size-time.pl
 bin/entitymodel
 dist.ini
 examples/async.pl
+examples/auth.pl
+examples/emt.pl
+examples/query.pl
 lib/EntityModel.pm
+lib/EntityModel/App.pm
 lib/EntityModel/Async.pm
 lib/EntityModel/Cache.pm
 lib/EntityModel/Cache/Perl.pm
+lib/EntityModel/Collection.pm
 lib/EntityModel/DB.pm
 lib/EntityModel/Deferred.pm
 lib/EntityModel/Definition.pm
@@ -20,6 +25,7 @@ lib/EntityModel/Definition/Perl.pm
 lib/EntityModel/Definition/XML.pm
 lib/EntityModel/Entity.pm
 lib/EntityModel/Entity/Constraint.pm
+lib/EntityModel/EntityCollection.pm
 lib/EntityModel/Field.pm
 lib/EntityModel/Field/Refer.pm
 lib/EntityModel/Gather.pm
@@ -39,6 +45,7 @@ lib/EntityModel/Query/Intersect.pm
 lib/EntityModel/Query/Join.pm
 lib/EntityModel/Query/JoinTable.pm
 lib/EntityModel/Query/OrderField.pm
+lib/EntityModel/Query/ParseSQL.pm
 lib/EntityModel/Query/ReturningField.pm
 lib/EntityModel/Query/Select.pm
 lib/EntityModel/Query/SubQuery.pm
@@ -62,10 +69,13 @@ lib/EntityModel/Test/Storage.pm
 lib/EntityModel/Transaction.pm
 t/00-pod.t
 t/00-use.t
+t/app.t
 t/async.t
 t/cache.t
+t/collection.t
 t/deferred.t
 t/definition.t
+t/entity-collection.t
 t/entitymodel.t
 t/general.t
 t/large-model.t

@@ -1,8 +1,9 @@
 package EntityModel::Definition;
-BEGIN {
-  $EntityModel::Definition::VERSION = '0.013';
+{
+  $EntityModel::Definition::VERSION = '0.014';
 }
 use EntityModel::Class {
+	model => { type => 'EntityModel::Model' },
 };
 
 =head1 NAME
@@ -11,7 +12,7 @@ EntityModel::Definition - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.013
+version 0.014
 
 =head1 SYNOPSIS
 
@@ -61,7 +62,86 @@ sub load {
 	);
 }
 
+=head2 save
+
+Generic save method, passing file or string to the appropriate L<save_file> or L<save_string> methods.
+
+=cut
+
+sub save {
+	my $self = shift;
+	my %args = @_;
+
+	my $target = delete $args{target};
+	my ($k, $v);
+	if(ref $target ~~ 'HASH') {
+		($k, $v) = %$target;
+	} elsif(ref $target ~~ 'ARRAY') {
+		($k, $v) = @$target;
+	} else {
+		$k = shift;
+	}
+	logDebug("Trying [%s] as [%s] => [%s]", $self, $k, $v);
+	die 'Nothing passed' unless defined $k;
+
+	my %data = (
+		model => $self->model,
+	);
+	return $self->save_file(
+		target => $v,
+		%data
+	) if $k eq 'file' && defined $v;
+	return $self->save_string(
+		output => 'string',
+		%data
+	) if $k eq 'string';
+
+	die 'Unable to save ' . $self . " from [$k] and [$v]";
+	return $self;
+}
+
+=head2 field_structure
+
+=cut
+
+sub field_structure {
+	my ($self, $field) = @_;
+	return {
+		name	=> $field->name,
+		type	=> $field->type,
+	};
+}
+
+=head2 entity_structure
+
+=cut
+
+sub entity_structure {
+	my ($self, $entity) = @_;
+	return {
+		name	=> $entity->name,
+		primary	=> $entity->primary,
+		field	=> [ map $self->field_structure($_), $entity->field->list ],
+	}
+}
+
+=head2 structure_from_model
+
+Return a hashref representing the given model.
+
+=cut
+
+sub structure_from_model {
+	my ($self, $model) = @_;
+	return {
+		name => $model->name,
+		entity => [ map $self->entity_structure($_), $model->entity->list ],
+	};
+}
+
 =head2 apply_model_from_structure
+
+Applies a definition (given as a hashref) to generate or update a model.
 
 =cut
 

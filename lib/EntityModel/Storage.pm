@@ -1,6 +1,6 @@
 package EntityModel::Storage;
-BEGIN {
-  $EntityModel::Storage::VERSION = '0.013';
+{
+  $EntityModel::Storage::VERSION = '0.014';
 }
 use EntityModel::Class {
 	_isa		=> [qw(Mixin::Event::Dispatch)],
@@ -14,7 +14,7 @@ EntityModel::Storage - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.013
+version 0.014
 
 =head1 SYNOPSIS
 
@@ -75,8 +75,7 @@ sub apply_model_and_schema {
 	my $code;
 	# Called when everything's been applied successfully
 	my $done; $done = sub {
-		$done = sub { die "Tried to hit the same completion callback twice\n" };
-		warn "have done! <<<<<<<<<<<<<<<<<\n";
+#		$done = sub { die "Tried to hit the same completion callback twice\n" };
 		$args{on_complete}->() if exists $args{on_complete};
 		0
 	};
@@ -87,7 +86,7 @@ sub apply_model_and_schema {
 		unless(@pending) {
 			return 1 if keys %incomplete; # try us again later
 			$done->();
-			return 1; # all complete
+			return 0; # all complete
 		}
 
 		# Next item in queue, no idea what state it's in yet

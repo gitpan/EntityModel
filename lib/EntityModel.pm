@@ -12,7 +12,7 @@ use EntityModel::Class {
 	db		=> { type => 'EntityModel::DB' },
 };
 
-our $VERSION = '0.013';
+our $VERSION = '0.014';
 
 =head1 NAME
 
@@ -20,7 +20,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.013
+version 0.014
 
 =head1 SYNOPSIS
 
