@@ -82,6 +82,7 @@ t/large-model.t
 t/new-api.t
 t/plugin.t
 t/query.t
+t/storage-create-entity.t
 t/storage.t
 t/template.t
 t/test-cache.t

@@ -12,7 +12,7 @@ use EntityModel::Class {
 	db		=> { type => 'EntityModel::DB' },
 };
 
-our $VERSION = '0.014';
+our $VERSION = '0.015';
 
 =head1 NAME
 
@@ -20,7 +20,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 
@@ -86,6 +86,10 @@ use EntityModel::Query;
 Constructor. Given a set of options, will load any plugins specified (and/or the defaults), applying
 other config options via the appropriate plugins.
 
+Typically run without options:
+
+ my $model = EntityModel->new;
+
 =cut
 
 sub new {
@@ -126,6 +130,40 @@ Parameters:
 
 =back
 
+Common usage includes reading from inline Perl:
+
+ $model->load_from(
+  Perl => {
+   name => 'kvstore',
+   entity => [
+    name => 'object',
+    primary => 'iditem',
+    field => [
+     { name => 'iditem', type => 'bigserial' },
+     { name => 'key', type => 'varchar' },
+     { name => 'value', type => 'varchar' },
+    ],
+   ],
+  }
+ );
+
+or the equivalent from JSON:
+
+ $model->load_from(
+  JSON => \q{
+   "name" : "kvstore",
+   "entity" : [
+    "name" : "object",
+    "primary" : "iditem",
+    "field" : [
+     { "name" : "iditem", "type" : "bigserial" },
+     { "name" : "key", "type" : "varchar" },
+     { "name" : "value", "type" : "varchar" }
+    ]
+   ]
+  }
+ );
+
 =cut
 
 sub load_from {
@@ -156,6 +194,20 @@ Parameters:
 
 =back
 
+You might use something like this to store the current model to a file in JSON format:
+
+ $model->save_to(
+  JSON => 'model.json'
+ );
+
+or this to copy everything from a source model to a target model (wiping everything
+in the target in the process):
+
+ my $target = EntityModel->new;
+ $source->save_to(
+  model => $target
+ );
+
 =cut
 
 sub save_to {
@@ -176,12 +228,14 @@ sub save_to {
 
 Brings in the given component if it hasn't already been loaded.
 
+Typically used by internal methods only.
+
 =cut
 
 sub load_component {
 	my $self = shift;
 	my $class = shift;
-	unless(eval { $class->can('new') }) {
+	unless($class->can('new')) {
 		Module::Load::load($class);
 		$class->register;
 	}
@@ -252,7 +306,19 @@ sub add_storage {
 	return $self;
 }
 
+=head2 backend_ready
+
+Returns true if all storage and cache backends are ready, false otherwise.
+
+=cut
+
 sub backend_ready { shift->{backend_ready} }
+
+=head2 wait_for_backend
+
+Requests an event to run after all backends signal readiness.
+
+=cut
 
 sub wait_for_backend {
 	my $self = shift;
@@ -290,6 +356,9 @@ sub add_cache {
 }
 
 =head2 add_plugin
+
+Adds a plugin. Currently the definition of a 'plugin' is somewhat nebulous,
+but L<EntityModel::Web> is one example.
 
 =cut
 
@@ -330,7 +399,7 @@ sub transaction {
 
 =head2 load_plugin
 
-Load a new plugin. You don't want this (yet).
+Used internally, see L</add_plugin>. Will disappear in the future.
 
 =cut
 
@@ -761,6 +830,10 @@ backends, uses tied hashes and arrays.
 =item * L<Tangram> - An object persistence layer.
 
 =item * L<KiokuDB> - described as an "Object Graph storage engine" rather than an ORM
+
+=item * L<DBIx::DataModel> - ORM using UML definitions
+
+=item * L<Jifty::DBI> - another ORM
 
 =back
 

@@ -1,6 +1,6 @@
 package EntityModel::App;
 {
-  $EntityModel::App::VERSION = '0.014';
+  $EntityModel::App::VERSION = '0.015';
 }
 use EntityModel::Class {
 	model	=> { type => 'EntityModel::Model' },
@@ -16,7 +16,7 @@ EntityModel::App - interface to L<EntityModel> admin application
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 

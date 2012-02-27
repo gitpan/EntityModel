@@ -11,10 +11,10 @@ note 'Basic tests first';
 subtest 'Basic EntityModel::Collection functionality' => (my $basic = sub {
 	my ($class, $extra) = @_;
 	sub {
-		plan tests => 25 + $extra;
+		plan tests => 26 + $extra;
 		# Instantiate, check some methods and overloads exist
-		my $c = new_ok($class => [
-		]);
+		my $c = new_ok($class => [ ]);
+		Scalar::Util::weaken(my $weak_c = $c);
 		can_ok($c, qw{done fail commit each add_handler has_pending});
 		is(ref(\&{$c}), 'CODE', 'can use as a coderef');
 
@@ -27,18 +27,18 @@ subtest 'Basic EntityModel::Collection functionality' => (my $basic = sub {
 			is($fail, 0, 'no failures seen');
 		};
 		is($c->each(sub {
-			is($_[0], $c, '$self matches $c in callback for ->each');
+			is($_[0], $weak_c, '$self matches $c in callback for ->each');
 			is($_[1], $v, 'item matches in callback for ->each');
 			$v = 0;
 		}), $c, 'can queue a callback for ->each');
 		$post_check->();
 		is($c->done(sub {
-			is($_[0], $c, '$self matches $c in callback for ->done');
+			is($_[0], $weak_c, '$self matches $c in callback for ->done');
 			++$committed;
 		}), $c, 'can queue a callback for ->done');
 		$post_check->();
 		is($c->fail(sub {
-			is($_[0], $c, '$self matches $c in callback for ->fail');
+			is($_[0], $weak_c, '$self matches $c in callback for ->fail');
 			++$fail;
 		}), $c, 'can queue a callback for ->fail');
 		is($v, 17, '$v is still unchanged before commit');
@@ -51,6 +51,8 @@ subtest 'Basic EntityModel::Collection functionality' => (my $basic = sub {
 		is($v, 0, 'value is unchanged');
 		is($committed, 0, 'still marked as committed');
 		is($fail, 1, 'single failure seen');
+		undef $c;
+		done_testing();
 	}
 })->('EntityModel::Collection', 0);
 
@@ -87,4 +89,5 @@ Local::CollectionTestClass->import(
 	}
 );
 subtest 'Hardcoded fail handler' => $basic->('Local::CollectionTestClass', 1);
+done_testing();
 

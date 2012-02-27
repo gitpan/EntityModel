@@ -24,6 +24,7 @@ sub check_model : Test(6) {
 
 package EntityModel::Definition::PerlTest;
 use base qw(EntityModel::Definition::Test);
+use Try::Tiny;
 use Test::More;
 
 # Set up an EntityModel from a Perl hash
@@ -46,6 +47,13 @@ sub setup : Test(setup => 2) {
 	  ] }
 	  ] }), 'load model');
 	$self->{model} = $model;
+	try {
+		require Devel::Size;
+		note sprintf "Model was %.2fKB", (Devel::Size::total_size($model) / 1024);
+	} catch {
+		# don't care if we fail
+		note "Size check failed: $_";
+	};
 }
 
 package EntityModel::Definition::XMLTest;

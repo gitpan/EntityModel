@@ -1,6 +1,6 @@
 package EntityModel::Test::Storage;
 {
-  $EntityModel::Test::Storage::VERSION = '0.014';
+  $EntityModel::Test::Storage::VERSION = '0.015';
 }
 use EntityModel::Class {
 	_isa	=> [qw(Exporter)],
@@ -12,7 +12,7 @@ EntityModel::Test::Storage - tests for L<EntityModel::Storage> and subclasses
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 
@@ -108,6 +108,7 @@ Check whether the expected methods are present. Requires the class to be loaded 
 
 sub storage_methods_ok {
 	my $class = shift;
+	my $opt = shift || [];
 	my $msg = shift || "$class has all the required methods";
 	return 0 unless _methods_ok($class, $msg);
 	return _report_pass($msg);
@@ -273,4 +274,4 @@ Tom Molesworth <cpan@entitymodel.com>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2008-2011. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2008-2012. Licensed under the same terms as Perl itself.

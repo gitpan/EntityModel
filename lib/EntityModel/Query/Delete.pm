@@ -1,6 +1,6 @@
 package EntityModel::Query::Delete;
 {
-  $EntityModel::Query::Delete::VERSION = '0.014';
+  $EntityModel::Query::Delete::VERSION = '0.015';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query}],
@@ -12,7 +12,7 @@ EntityModel::Query::Delete - support for SQL DELETE statements
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 

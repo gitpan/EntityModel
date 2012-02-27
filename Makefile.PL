@@ -12,7 +12,8 @@ my %WriteMakefileArgs = (
   "ABSTRACT" => "Cross-language event-driven ORM",
   "AUTHOR" => "Tom Molesworth <cpan\@entitymodel.com>",
   "BUILD_REQUIRES" => {
-    "Test::Class" => 0
+    "Test::Class" => 0,
+    "Test::More" => "0.88"
   },
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => "6.30"
@@ -34,7 +35,7 @@ my %WriteMakefileArgs = (
     "Template" => "2.18",
     "XML::XPath" => "1.00"
   },
-  "VERSION" => "0.014",
+  "VERSION" => "0.015",
   "test" => {
     "TESTS" => "t/*.t"
   }

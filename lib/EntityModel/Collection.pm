@@ -1,6 +1,6 @@
 package EntityModel::Collection;
 {
-  $EntityModel::Collection::VERSION = '0.014';
+  $EntityModel::Collection::VERSION = '0.015';
 }
 use EntityModel::Class {
 	pending	=> 'int',
@@ -13,7 +13,7 @@ EntityModel::Collection - manage entity model definitions
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 
@@ -123,11 +123,13 @@ sub commit {
 
 	logDebug("Commit");
 # Apply anything we can - and make sure we're not in void context to avoid commit loops
-	my $x; $x = $_->($self) for $self->can('apply');
+	if(my $apply = $self->can('apply')) {
+		my $x; $x = $apply->($self);
+	}
 	$self->pending(0);
 	logDebug("Has pending? %s", ($self->has_pending ? 'yes' : 'no'));
 
-	$code->() if $code;
+	$code->($self) if $code;
 	$self->('done' => $self);
 	return $self;
 }

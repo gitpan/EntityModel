@@ -1,6 +1,6 @@
 package EntityModel::Model;
 {
-  $EntityModel::Model::VERSION = '0.014';
+  $EntityModel::Model::VERSION = '0.015';
 }
 use EntityModel::Class {
 	_isa		=> [qw{Mixin::Event::Dispatch}],
@@ -19,7 +19,7 @@ EntityModel::Model - base class for model definitions
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package EntityModel::Definition;
 {
-  $EntityModel::Definition::VERSION = '0.014';
+  $EntityModel::Definition::VERSION = '0.015';
 }
 use EntityModel::Class {
 	model => { type => 'EntityModel::Model' },
@@ -12,7 +12,7 @@ EntityModel::Definition - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 

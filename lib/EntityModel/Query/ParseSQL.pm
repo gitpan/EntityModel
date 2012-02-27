@@ -1,6 +1,6 @@
 package EntityModel::Query::ParseSQL;
 {
-  $EntityModel::Query::ParseSQL::VERSION = '0.014';
+  $EntityModel::Query::ParseSQL::VERSION = '0.015';
 }
 use strict;
 use warnings FATAL => 'all';
@@ -35,7 +35,7 @@ EntityModel::Query::ParseSQL
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 

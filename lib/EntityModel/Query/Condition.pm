@@ -1,6 +1,6 @@
 package EntityModel::Query::Condition;
 {
-  $EntityModel::Query::Condition::VERSION = '0.014';
+  $EntityModel::Query::Condition::VERSION = '0.015';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query::Base}],
@@ -14,7 +14,7 @@ EntityModel::Query::Condition - a condition clause for where, on etc.
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 

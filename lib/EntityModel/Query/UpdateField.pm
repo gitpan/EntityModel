@@ -1,6 +1,6 @@
 package EntityModel::Query::UpdateField;
 {
-  $EntityModel::Query::UpdateField::VERSION = '0.014';
+  $EntityModel::Query::UpdateField::VERSION = '0.015';
 }
 use EntityModel::Class {
 	'_isa' => [qw(EntityModel::Query::Field)],
@@ -13,7 +13,7 @@ EntityModel::Query::UpdateField - field to be updated in an update statement
 
 =head1 VERSION
 
-version 0.014
+version 0.015
 
 =head1 SYNOPSIS
 
