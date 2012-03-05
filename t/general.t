@@ -210,7 +210,7 @@ $model->transaction(sub {
 	$id = $article->id;
 });
 
-# And again outside the transaction 
+# And again outside the transaction
 ok(my $article = Entity::Article->new($id), 'can do a ->new lookup');
 is($article->id, $id, 'ID matches');
 is($article->title, 'Article title', 'title matches');
@@ -223,7 +223,6 @@ is($articles[0]->id, $article->id, 'ID matches');
 for(1..30) {
 	my $t = Entity::Tag->create({ name => "tag$_" })->commit or die "fail to create";
 	Entity::Article::Tag->create({ idtag => $t->id, idarticle => $article->id })->commit or die "could not create";
-	
 }
 is($article->tag->count, 30, 'have 3 tags for article');
 cmp_deeply([ map { $_->name } $article->tag->list ], bag(map { "tag$_" } 1..30), 'tag names are correct');

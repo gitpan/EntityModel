@@ -1,6 +1,6 @@
 package EntityModel::EntityCollection;
 {
-  $EntityModel::EntityCollection::VERSION = '0.015';
+  $EntityModel::EntityCollection::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa => [qw(EntityModel::Collection)],
@@ -13,7 +13,7 @@ EntityModel::EntityCollection - deal with collections of entities
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -80,7 +80,7 @@ sub apply {
 			. ' as "' . $_->{alias} . '"'
 		} @{ $self->{select} })
 		. ' from article'
-		. ' where 1=1' 
+		. ' where 1=1'
 		. ' group by ' . join(', ', map {
 			(exists($_->{op})
 			? $_->{op} . '(' . $_->{field} . ')'

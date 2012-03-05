@@ -1,6 +1,6 @@
 package EntityModel::Query::ParseSQL;
 {
-  $EntityModel::Query::ParseSQL::VERSION = '0.015';
+  $EntityModel::Query::ParseSQL::VERSION = '0.016';
 }
 use strict;
 use warnings FATAL => 'all';
@@ -35,7 +35,7 @@ EntityModel::Query::ParseSQL
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -48,7 +48,7 @@ version 0.015
 
 =cut
 
-sub where_am_i { return unless DEBUG; my $self = shift; 
+sub where_am_i { return unless DEBUG; my $self = shift;
 	my $note = shift || (caller(1))[3];
 	my ( $lineno, $col, $text ) = $self->where;
 	my $len = length($text);
@@ -163,7 +163,7 @@ sub parse_join {
 						$self->token_lvalue,
 						$self->token_operator,
 						$self->token_rvalue
-					] 
+					]
 				},
 				sub {
 					$self->where_am_i;
@@ -235,7 +235,7 @@ sub parse_where {
 						$self->token_lvalue,
 						$self->token_operator,
 						$self->token_rvalue
-					] 
+					]
 				},
 				sub {
 					[

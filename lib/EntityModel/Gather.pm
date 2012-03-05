@@ -1,6 +1,6 @@
 package EntityModel::Gather;
 {
-  $EntityModel::Gather::VERSION = '0.015';
+  $EntityModel::Gather::VERSION = '0.016';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Gather - asynchronous helper functions for L<EntityModel>
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 

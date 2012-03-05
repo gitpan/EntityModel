@@ -1,6 +1,6 @@
 package EntityModel::Entity;
 {
-  $EntityModel::Entity::VERSION = '0.015';
+  $EntityModel::Entity::VERSION = '0.016';
 }
 use EntityModel::Class {
 	name		=> { type => 'string' },
@@ -19,7 +19,7 @@ EntityModel::Entity - entity definition for L<EntityModel>
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -120,7 +120,7 @@ sub create_from_definition {
 	my $class = shift;
 	my $def = shift;
 	my $self = $class->new(delete $def->{name});
-	
+
 	if(my $field = delete $def->{field}) {
 		$self->add_field(EntityModel::Field->create_from_definition($_)) foreach @$field;
 	}

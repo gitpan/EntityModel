@@ -1,6 +1,6 @@
 package EntityModel::Test::Storage;
 {
-  $EntityModel::Test::Storage::VERSION = '0.015';
+  $EntityModel::Test::Storage::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa	=> [qw(Exporter)],
@@ -12,7 +12,7 @@ EntityModel::Test::Storage - tests for L<EntityModel::Storage> and subclasses
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -164,7 +164,7 @@ sub _simple_model {
 				"field" => [
 					{ "name" => "id", "type" => "int" },
 					{ "name" => "extra", "type" => "varchar" }
-				] 
+				]
 			} ]
 		}
 	) or die "Model creation failed";

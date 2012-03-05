@@ -35,7 +35,7 @@ use EntityModel::Cache::Perl;
 
 sub setup_cache : Test(startup => 2) {
 	my $self = shift;
-	
+
 	my $cache = new_ok('EntityModel::Cache::Perl');
 	isa_ok($cache, 'EntityModel::Cache');
 	$self->{cache} = $cache;

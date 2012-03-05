@@ -1,5 +1,6 @@
 package EntityModel;
 # ABSTRACT: Cross-language event-driven ORM
+
 use EntityModel::Class {
 	_isa		=> [qw(EntityModel::Model)],
 	name		=> { type => 'string' },
@@ -12,7 +13,7 @@ use EntityModel::Class {
 	db		=> { type => 'EntityModel::DB' },
 };
 
-our $VERSION = '0.015';
+our $VERSION = '0.016';
 
 =head1 NAME
 
@@ -20,7 +21,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -434,6 +435,12 @@ sub handler_for {
 	return @handler;
 }
 
+sub defer {
+	my $self = shift;
+	my $code = shift;
+
+}
+
 =head2 DESTROY
 
 Unload all plugins on exit.
@@ -581,14 +588,14 @@ classes apply the model to the API, so in the case of the database this involves
 tables. For Perl, this dynamically creates a class structure in memory, and for C++ or JS this will
 export the required support code for inclusion in other projects.
 
-In terms of accessing backend storage, ach of the language-specific support options provides an API
+In terms of accessing backend storage, each of the language-specific support options provides an API
 which can communicate with one or more backend storage implementations, rather than being tightly coupled
 to a data storage method. Typically the Perl backend would interact directly with the database, and C++/JS
 would use a REST API against a Perl server.
 
 =head2 BACKEND STORAGE
 
-Backend storage services are provideed by subclasses of L<EntityModel::Storage>.
+Backend storage services are provided by subclasses of L<EntityModel::Storage>.
 
 =over 4
 
@@ -748,7 +755,7 @@ The primary classes used for interaction with models include:
 
 =back
 
-The following classes provide features that are used throughout the code: 
+The following classes provide features that are used throughout the code:
 
 =over 4
 
@@ -835,7 +842,12 @@ backends, uses tied hashes and arrays.
 
 =item * L<Jifty::DBI> - another ORM
 
+=item * L<ORLite> - minimal SQLite-based ORM
+
 =back
+
+Probably many more, if you have something which isn't in the above list (or a better description of any of the
+existing entries), please raise via RT.
 
 Distributions which provide class structure and wrappers around the Perl OO mechanism are likewise covered by
 several other CPAN modules, with the clear winner here in the form of L<Moose> and derivatives.
@@ -848,4 +860,4 @@ Tom Molesworth <cpan@entitymodel.com>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2008-2011. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2008-2012. Licensed under the same terms as Perl itself.

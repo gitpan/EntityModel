@@ -1,6 +1,6 @@
 package EntityModel::Query::Union;
 {
-  $EntityModel::Query::Union::VERSION = '0.015';
+  $EntityModel::Query::Union::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query::SubQuery}],
@@ -13,7 +13,7 @@ EntityModel::Query::Union - union set operation
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 

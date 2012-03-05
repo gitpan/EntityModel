@@ -32,10 +32,11 @@ my %WriteMakefileArgs = (
     "JSON::XS" => "2.00",
     "Mixin::Event::Dispatch" => "0.002",
     "Module::Load" => 0,
+    "Parser::MGC" => "0.10",
     "Template" => "2.18",
     "XML::XPath" => "1.00"
   },
-  "VERSION" => "0.015",
+  "VERSION" => "0.016",
   "test" => {
     "TESTS" => "t/*.t"
   }

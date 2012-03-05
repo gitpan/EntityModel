@@ -1,6 +1,6 @@
 package EntityModel::Model;
 {
-  $EntityModel::Model::VERSION = '0.015';
+  $EntityModel::Model::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa		=> [qw{Mixin::Event::Dispatch}],
@@ -19,7 +19,7 @@ EntityModel::Model - base class for model definitions
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -405,7 +405,7 @@ sub provide_handler_for {
 	return $self;
 }
 
-sub handle_item {	
+sub handle_item {
 	my $self = shift;
 	my %args = @_;
 	if(my $code = $self->handler->get($args{item})) {

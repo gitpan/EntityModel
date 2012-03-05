@@ -1,6 +1,6 @@
 package EntityModel::Definition;
 {
-  $EntityModel::Definition::VERSION = '0.015';
+  $EntityModel::Definition::VERSION = '0.016';
 }
 use EntityModel::Class {
 	model => { type => 'EntityModel::Model' },
@@ -12,7 +12,7 @@ EntityModel::Definition - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -28,7 +28,7 @@ See L<EntityModel>.
 
 =head2 load
 
-Generic load method, passing file or string to the appropriate L<load_file> or L<load_string> methods.
+Generic load method, passing file or string to the appropriate L</load_file> or L</load_string> methods.
 
 =cut
 
@@ -64,7 +64,7 @@ sub load {
 
 =head2 save
 
-Generic save method, passing file or string to the appropriate L<save_file> or L<save_string> methods.
+Generic save method, passing file or string to the appropriate L</save_file> or L</save_string> methods.
 
 =cut
 
@@ -135,7 +135,9 @@ sub structure_from_model {
 	my ($self, $model) = @_;
 	return {
 		name => $model->name,
-		entity => [ map $self->entity_structure($_), $model->entity->list ],
+		entity => [
+			map $self->entity_structure($_), $model->entity->list
+		],
 	};
 }
 
@@ -189,14 +191,13 @@ sub add_entity_to_model {
 	return $self;
 }
 
-=head2 C<register>
+=head2 register
+
+Empty default method, implemented by subclasses to register themselves with the model.
 
 =cut
 
-sub register {
-	my $self = shift;
-
-}
+sub register { }
 
 1;
 
@@ -208,4 +209,4 @@ Tom Molesworth <cpan@entitymodel.com>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2008-2011. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2008-2012. Licensed under the same terms as Perl itself.

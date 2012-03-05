@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl;
 {
-  $EntityModel::Support::Perl::VERSION = '0.015';
+  $EntityModel::Support::Perl::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Support}],
@@ -15,7 +15,7 @@ EntityModel::Support::Perl - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -62,7 +62,7 @@ sub apply_model {
 
 =cut
 
-sub apply_entity {	
+sub apply_entity {
 	my $self = shift;
 	my $entity = shift;
 
@@ -185,7 +185,7 @@ Generate the entity name string from the given package name.
 
 sub entity_name {
 	my ($self, $pkg) = @_;
-	$pkg =~ s/^\Q$self->namespace\E:://; 
+	$pkg =~ s/^\Q$self->namespace\E:://;
 
 	return join('_', map {
 		lc($_)

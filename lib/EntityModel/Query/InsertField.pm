@@ -1,6 +1,6 @@
 package EntityModel::Query::InsertField;
 {
-  $EntityModel::Query::InsertField::VERSION = '0.015';
+  $EntityModel::Query::InsertField::VERSION = '0.016';
 }
 use EntityModel::Class {
 	'_isa' => [qw(EntityModel::Query::Field)],
@@ -13,7 +13,7 @@ EntityModel::Query::InsertField - field list for INSERT statement
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 

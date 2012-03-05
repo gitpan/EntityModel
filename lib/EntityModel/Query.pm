@@ -1,6 +1,6 @@
 package EntityModel::Query;
 {
-  $EntityModel::Query::VERSION = '0.015';
+  $EntityModel::Query::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Query::Base}],
@@ -25,7 +25,7 @@ EntityModel::Query - handle SQL queries
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -178,7 +178,7 @@ sub parse_base {
 	my $meth = delete $arg{method};
 	my $type = delete $arg{type};
 
-	# Capital letter means a class of some sort. Arbitrary but at least it's simple. 
+	# Capital letter means a class of some sort. Arbitrary but at least it's simple.
 	my $extType = ucfirst($type) eq $type;
 
 	if(ref $spec ~~ 'ARRAY') {
@@ -454,7 +454,7 @@ sub iterate {
 		return EntityModel::Error->new('SQL failed');
 	}
 	return unless $sth->{Active};
-	my @rslt;
+
 	while(my $row = $sth->fetchrow_hashref) {
 		logDebug("Got " . join(',', map { $_ . ' => ' . ($row->{$_} // 'undef') } keys %$row));
 		$code->($row);

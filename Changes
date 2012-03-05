@@ -1,3 +1,11 @@
+0.016     2012-03-05 01:25:35 Europe/London
+	Another minor update with some code cleanup and preparation for some changes and minor
+	restructuring planned for the next version:
+	* Clean up several minor dependency issues (the deprecated EntityModel::DB class was trying to
+	pull in DBI, and the SQL handling has a dependency on Parser::MGC).
+	* Enable some additional dzil tests (mainly author tests for compiling modules, testing
+	synopsis code, and the like)
+
 0.015     2012-02-27 02:54:02 Europe/London
 	This is a minor update only:
 	* Fixes to tests and handling for EntityModel::Collection

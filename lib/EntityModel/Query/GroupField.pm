@@ -1,6 +1,6 @@
 package EntityModel::Query::GroupField;
 {
-  $EntityModel::Query::GroupField::VERSION = '0.015';
+  $EntityModel::Query::GroupField::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query::Field}]
@@ -12,7 +12,7 @@ EntityModel::Query::GroupField - GROUP BY fields
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 

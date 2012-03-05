@@ -1,6 +1,6 @@
 package EntityModel::Storage;
 {
-  $EntityModel::Storage::VERSION = '0.015';
+  $EntityModel::Storage::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa		=> [qw(Mixin::Event::Dispatch)],
@@ -14,7 +14,7 @@ EntityModel::Storage - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -424,7 +424,7 @@ Most of the work is handled by the following methods:
 =back
 
 Each of these applies to a single entity instance only. Since they operate on a callback
-basis, multiple operations can be aggregated if desired: 
+basis, multiple operations can be aggregated if desired:
 
  select * from storage where id in (x,y,z)
 

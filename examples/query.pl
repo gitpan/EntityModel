@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/perl
 use strict;
 use warnings;
 use EntityModel;
@@ -129,7 +129,6 @@ Entity::Article->find({ title => 'Test' })->remove;
 # The entire table can be cleared using ->truncate
 Entity::Article->truncate;
 
-# 
 Entity::Article->populate(
 );
 

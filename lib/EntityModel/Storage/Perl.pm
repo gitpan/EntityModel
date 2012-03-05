@@ -1,6 +1,6 @@
 package EntityModel::Storage::Perl;
 {
-  $EntityModel::Storage::Perl::VERSION = '0.015';
+  $EntityModel::Storage::Perl::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage}],
@@ -12,7 +12,7 @@ EntityModel::Storage::Perl - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 

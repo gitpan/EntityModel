@@ -1,6 +1,6 @@
 package EntityModel::Query::Except;
 {
-  $EntityModel::Query::Except::VERSION = '0.015';
+  $EntityModel::Query::Except::VERSION = '0.016';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query::SubQuery}],
@@ -13,7 +13,7 @@ EntityModel::Query::Except - support for EXCEPT set logic
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 

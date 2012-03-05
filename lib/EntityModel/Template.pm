@@ -1,6 +1,6 @@
 package EntityModel::Template;
 {
-  $EntityModel::Template::VERSION = '0.015';
+  $EntityModel::Template::VERSION = '0.016';
 }
 use EntityModel::Class {
 	include_path	=> { type => 'array', subclass => 'string' }
@@ -12,7 +12,7 @@ EntityModel::Template - template handling for L<EntityModel>
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -42,7 +42,7 @@ BEGIN {
 		my $hash = shift;
 		return [ $hash ];
 	};
-# hashops since we have datetime object... in theory. 
+# hashops since we have datetime object... in theory.
 	$Template::Stash::HASH_OPS->{ msDuration } = sub {
 		my $v = shift;
 		return DateTime::Format::Duration->new(pattern => '%H:%M:%S.%3N')->format_duration($v);
@@ -191,7 +191,7 @@ sub from_now {
 		unshift @p, "$unit $k" . ($unit != 1 ? 's' : '');
 	}
 
-# Don't show too much resolution 
+# Don't show too much resolution
 	@p = @p[0..1] if @p > 2;
 	my $pattern = join(', ', @p);
 

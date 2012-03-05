@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl::Base;
 {
-  $EntityModel::Support::Perl::Base::VERSION = '0.015';
+  $EntityModel::Support::Perl::Base::VERSION = '0.016';
 }
 use EntityModel::Class {
 };
@@ -11,7 +11,7 @@ EntityModel::Support::Perl::Base - base class for entity instances
 
 =head1 VERSION
 
-version 0.015
+version 0.016
 
 =head1 SYNOPSIS
 
@@ -132,7 +132,7 @@ sub new {
 		}
 	}
 
-# An arrayref or plain value is used as an ID 
+# An arrayref or plain value is used as an ID
 	if(!ref($spec) || ref($spec) eq 'ARRAY') {
 		$class->_storage->read(
 			entity		=> $class->_entity,
@@ -179,7 +179,7 @@ Supports the following event types:
 
 =item * on_update - values have been updated, but not necessarily written to storage
 
-=item * on_remove - this entry has been removed from storage 
+=item * on_remove - this entry has been removed from storage
 
 =item * on_not_found - could not find this entry in backend storage
 

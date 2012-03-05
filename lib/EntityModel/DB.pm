@@ -1,6 +1,6 @@
 package EntityModel::DB;
 {
-  $EntityModel::DB::VERSION = '0.015';
+  $EntityModel::DB::VERSION = '0.016';
 }
 # ABSTRACT: Database manager for entity handling
 use EntityModel::Class {
@@ -20,14 +20,7 @@ EntityModel::DB - database management
 
 =head1 VERSION
 
-version 0.015
-
-=head1 SYNOPSIS
-
- my $db = EntityModel::DB->new;
- $db->transaction(sub {
-	
- });
+version 0.016
 
 =head1 DESCRIPTION
 
@@ -36,7 +29,6 @@ Manages database connections and transactions.
 =cut
 
 use EntityModel::Query;
-use DBI;
 
 # Current database entry when in transaction
 our $ACTIVE_DB;
@@ -73,6 +65,9 @@ sub dbh {
 	return $self->{dbh}->{$name} if $self->{dbh}->{$name};
 
 	logDebug("Connecting to database with DSN [%s]", $self->dsn);
+	# FIXME All this should go, it's supposed to be handled entirely by the backend
+	# storage engine.
+	require DBI;
 	my $dbh = $self->{dbh}->{$name} = DBI->connect(
 		$self->dsn,
 		$self->user,
