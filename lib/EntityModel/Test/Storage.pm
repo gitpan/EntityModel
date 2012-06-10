@@ -1,6 +1,6 @@
 package EntityModel::Test::Storage;
 {
-  $EntityModel::Test::Storage::VERSION = '0.016';
+  $EntityModel::Test::Storage::VERSION = '0.017';
 }
 use EntityModel::Class {
 	_isa	=> [qw(Exporter)],
@@ -12,7 +12,7 @@ EntityModel::Test::Storage - tests for L<EntityModel::Storage> and subclasses
 
 =head1 VERSION
 
-version 0.016
+version 0.017
 
 =head1 SYNOPSIS
 

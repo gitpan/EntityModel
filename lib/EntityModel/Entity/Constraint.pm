@@ -1,6 +1,6 @@
 package EntityModel::Entity::Constraint;
 {
-  $EntityModel::Entity::Constraint::VERSION = '0.016';
+  $EntityModel::Entity::Constraint::VERSION = '0.017';
 }
 use EntityModel::Class {
 	detail		=> { type => 'string' },
@@ -12,7 +12,7 @@ EntityModel::Entity::Constraint - constraint support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.016
+version 0.017
 
 =head1 SYNOPSIS
 

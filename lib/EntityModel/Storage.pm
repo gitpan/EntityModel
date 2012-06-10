@@ -1,6 +1,6 @@
 package EntityModel::Storage;
 {
-  $EntityModel::Storage::VERSION = '0.016';
+  $EntityModel::Storage::VERSION = '0.017';
 }
 use EntityModel::Class {
 	_isa		=> [qw(Mixin::Event::Dispatch)],
@@ -14,7 +14,7 @@ EntityModel::Storage - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.016
+version 0.017
 
 =head1 SYNOPSIS
 

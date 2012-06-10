@@ -13,7 +13,7 @@ use EntityModel::Class {
 	db		=> { type => 'EntityModel::DB' },
 };
 
-our $VERSION = '0.016';
+our $VERSION = '0.017';
 
 =head1 NAME
 
@@ -21,7 +21,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.016
+version 0.017
 
 =head1 SYNOPSIS
 
@@ -787,7 +787,8 @@ Perl backend.
 
 =item * B<Configurable with a single file> - I like to be able to export, backup and diff the entity
 layout and having this in a single file as JSON or XML is more convenient for me than using multiple
-Perl packages, this also allows the configuration to be used by non-Perl code.
+Perl packages. This also allows the configuration to be used by non-Perl code, since it's a rare project
+these days that only involves a single language.
 
 =item * B<Backend abstraction> - the conceptual model generally doesn't need to be tied to a particular
 backend, for example the Perl side of things could either talk directly to a database or use a webservice.
@@ -815,26 +816,28 @@ There are plenty of other, better ORM implementations available on CPAN - these 
 =item * L<DBIx::Class> - appears to be the most highly regarded and actively developed one out there, and
 the available features, code quality and general stability are far in advance of this module. Unless you
 need the L<EntityModel> multi-language or asynchronous support features I would strongly encourage looking
-at L<DBIx::Class> first.
+at L<DBIx::Class> first
 
 =item * L<Rose::DB::Object> - written for speed, appears to cover most of the usual requirements, personally
-found the API less intuitive than other options but it appears to be widely deployed.
+found the API less intuitive than other options but it appears to be widely deployed
 
-=item * L<Fey::ORM> - newer than the other options, also appears to be reasonably flexible.
+=item * L<Fey::ORM> - newer than the other options, also appears to be reasonably flexible
 
-=item * L<DBIx::DataModel> - UML-based Object-Relational Mapping (ORM) framework.
+=item * L<DBIx::DataModel> - UML-based Object-Relational Mapping (ORM) framework
 
 =item * L<Alzabo> - another ORM which includes features such as GUI schema editing and SQL diff
 
 =item * L<Class::DBI> - generally considered to be superceded by L<DBIx::Class>, which provides a compatibility
-layer for existing applications.
+layer for existing applications
+
+=item * L<Class::DBI::Lite> - like L<Class::DBI> but lighter, presumably
 
 =item * L<ORMesque> - lightweight class-based ORM using L<SQL::Abstract>
 
 =item * L<Oryx> - Object persistence framework, meta-model based with support for both DBM and regular RDBMS
-backends, uses tied hashes and arrays.
+backends, uses tied hashes and arrays
 
-=item * L<Tangram> - An object persistence layer.
+=item * L<Tangram> - An object persistence layer
 
 =item * L<KiokuDB> - described as an "Object Graph storage engine" rather than an ORM
 
@@ -844,10 +847,30 @@ backends, uses tied hashes and arrays.
 
 =item * L<ORLite> - minimal SQLite-based ORM
 
+=item * L<Ormlette> - object persistence, "heavily influenced by Adam Kennedy's L<ORLite>". "light and fluffy", apparently!
+
+=item * L<ObjectDB> - another lightweight ORM, currently has only L<DBI> as a dependency
+
+=item * L<https://github.com/vti/async-orm|Async::ORM> - asynchronous ORM, see also article in L<http://showmetheco.de/articles/2010/1/mojolicious-async-orm-and-dbslayer.html>
+
+=item * L<ORM> - looks like it has support for MySQL, PostgreSQL and SQLite
+
+=item * L<fytwORM> - described as a "bare minimum ORM used for prototyping / proof of concepts"
+
+=item * L<DBR> - Database Repository ORM
+
+=item * L<SweetPea::Application::Orm> - specific to L<SweetPea>
+
+=item * L<Jorge> - ORM Made simple
+
+=item * L<DBI::Easy> - seems to be a wrapper around L<DBI>
+
+=item * L<Persistence::ORM> - looks like a combination between persistent Perl objects and standard ORM
+
 =back
 
-Probably many more, if you have something which isn't in the above list (or a better description of any of the
-existing entries), please raise via RT.
+Since this is Perl, there are probably many more, if you have something which isn't in the above list (or a better
+description of any of the existing entries), please raise via RT or email.
 
 Distributions which provide class structure and wrappers around the Perl OO mechanism are likewise covered by
 several other CPAN modules, with the clear winner here in the form of L<Moose> and derivatives.

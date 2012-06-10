@@ -1,6 +1,6 @@
 package EntityModel::Model;
 {
-  $EntityModel::Model::VERSION = '0.016';
+  $EntityModel::Model::VERSION = '0.017';
 }
 use EntityModel::Class {
 	_isa		=> [qw{Mixin::Event::Dispatch}],
@@ -19,7 +19,7 @@ EntityModel::Model - base class for model definitions
 
 =head1 VERSION
 
-version 0.016
+version 0.017
 
 =head1 SYNOPSIS
 
@@ -415,6 +415,11 @@ sub handle_item {
 		logError("No handler for [%s]", $args{item});
 	}
 	return $self;
+}
+
+sub flush {
+	my $self = shift;
+	$self->commit;
 }
 
 =head2 DESTROY

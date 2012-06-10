@@ -1,3 +1,7 @@
+0.017     2012-06-10 16:27:04 Europe/London
+	Minor release to update EntityModel::Class dependency.
+	Also added more ORMs to the "see also" section.
+
 0.016     2012-03-05 01:25:35 Europe/London
 	Another minor update with some code cleanup and preparation for some changes and minor
 	restructuring planned for the next version:

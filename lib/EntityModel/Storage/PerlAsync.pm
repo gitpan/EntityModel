@@ -1,6 +1,6 @@
 package EntityModel::Storage::PerlAsync;
 {
-  $EntityModel::Storage::PerlAsync::VERSION = '0.016';
+  $EntityModel::Storage::PerlAsync::VERSION = '0.017';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage::Perl}],
@@ -13,7 +13,7 @@ EntityModel::Storage::PerlAsync - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.016
+version 0.017
 
 =head1 SYNOPSIS
 
@@ -74,12 +74,12 @@ Returns $self.
 
 =cut
 
-use Carp qw/confess/;
+use Carp qw/cluck/;
 sub read {
 	my $self = shift;
 	my %args = @_;
 	return unless exists $args{on_complete};
-	confess "Request for id " . ($args{id} // 'undef') . " from " . $args{entity}->name;
+	# cluck "Request for id " . ($args{id} // 'undef') . " from " . $args{entity}->name;
 
 	my $complete = delete $args{on_complete};
 	$self->loop->later($self->sap(sub {

@@ -28,7 +28,7 @@ my %WriteMakefileArgs = (
   "PREREQ_PM" => {
     "CPS" => "0.10",
     "DateTime::Format::Duration" => 0,
-    "EntityModel::Class" => "0.010",
+    "EntityModel::Class" => "0.011",
     "JSON::XS" => "2.00",
     "Mixin::Event::Dispatch" => "0.002",
     "Module::Load" => 0,
@@ -36,7 +36,7 @@ my %WriteMakefileArgs = (
     "Template" => "2.18",
     "XML::XPath" => "1.00"
   },
-  "VERSION" => "0.016",
+  "VERSION" => "0.017",
   "test" => {
     "TESTS" => "t/*.t"
   }

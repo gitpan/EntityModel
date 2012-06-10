@@ -71,6 +71,7 @@ t/00-compile.t
 t/00-pod.t
 t/00-use.t
 t/app.t
+t/async-storage-perl.t
 t/async.t
 t/author-test-eol.t
 t/cache.t
