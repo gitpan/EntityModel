@@ -1,10 +1,11 @@
 package EntityModel::Storage::Perl;
 {
-  $EntityModel::Storage::Perl::VERSION = '0.017';
+  $EntityModel::Storage::Perl::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage}],
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -12,7 +13,7 @@ EntityModel::Storage::Perl - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -33,7 +34,7 @@ use List::MoreUtils qw(all);
 # Used for holding any entities that have been created
 my %EntityMap;
 
-# Max ID information
+# Max ID information, used for sequences
 my %EntityMaxID;
 
 =head1 METHODS
@@ -306,7 +307,7 @@ sub find {
 	my @rslt;
 	my $seen = 0;
 	ENTRY:
-	foreach my $entry (values %{$EntityMap{$args{entity}->name}->{store}}) {
+	foreach my $entry (sort values %{$EntityMap{$args{entity}->name}->{store}}) {
 		next ENTRY unless all { $entry->{$_} ~~ $args{data}->{$_} } keys %{$args{data}};
 		++$seen;
 		$args{on_item}->($entry) if exists $args{on_item};
@@ -381,9 +382,7 @@ sub outer {
 	my $entity = $args{entity};
 	die "Entity not found" unless exists $EntityMap{$entity->name};
 
-	my (@entries) = sort keys %{$EntityMap{$entity->name}->{store}};
-	my $first = shift @entries;
-	my $last = pop @entries;
+	my ($first, $last) = (sort keys %{$EntityMap{$entity->name}->{store}})[0,-1];
 	$args{on_first}->($first) if exists $args{on_first};
 	$args{on_last}->($last) if exists $args{on_last};
 	return ($first, $last);

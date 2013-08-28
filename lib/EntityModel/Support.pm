@@ -1,9 +1,10 @@
 package EntityModel::Support;
 {
-  $EntityModel::Support::VERSION = '0.017';
+  $EntityModel::Support::VERSION = '0.100';
 }
 use EntityModel::Class {
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -11,7 +12,7 @@ EntityModel::Support - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

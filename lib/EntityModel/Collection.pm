@@ -1,11 +1,12 @@
 package EntityModel::Collection;
 {
-  $EntityModel::Collection::VERSION = '0.017';
+  $EntityModel::Collection::VERSION = '0.100';
 }
 use EntityModel::Class {
 	pending	=> 'int',
 	event_handler => 'hash',
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -13,7 +14,7 @@ EntityModel::Collection - manage entity model definitions
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

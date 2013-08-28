@@ -18,8 +18,9 @@ sub setup {
 package EntityModel::TestBasic;
 use parent qw{Test::Class};
 use Test::More;
-use Test::Exception;
+use Test::Fatal;
 use EntityModel;
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 use constant ARTICLE_XML => q{
 <entitymodel>

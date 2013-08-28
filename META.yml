@@ -3,28 +3,44 @@ abstract: 'Cross-language event-driven ORM'
 author:
   - 'Tom Molesworth <cpan@entitymodel.com>'
 build_requires:
+  Capture::Tiny: 0
+  Test::CheckDeps: 0.006
   Test::Class: 0
-  Test::More: 0.88
+  Test::Fatal: 0.010
+  Test::More: 0.98
+  Test::Refcount: 0.07
+  Test::Script: 1.05
+  blib: 0
+  perl: 5.010001
 configure_requires:
-  ExtUtils::MakeMaker: 6.30
+  ExtUtils::MakeMaker: 6.48
+  File::ShareDir::Install: 0.03
 dynamic_config: 0
-generated_by: 'Dist::Zilla version 4.300017, CPAN::Meta::Converter version 2.120921'
+generated_by: 'Dist::Zilla version 4.300036, CPAN::Meta::Converter version 2.132140'
 license: perl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
 name: EntityModel
 requires:
-  CPS: 0.10
-  DateTime::Format::Duration: 0
-  EntityModel::Class: 0.011
+  CPS: 0
+  EntityModel::Class: 0.012
+  File::ShareDir: 1.00
+  Future: 0.12
+  IO::Async: 0.50
+  IO::Socket::IP: 0
   JSON::XS: 2.00
-  Mixin::Event::Dispatch: 0.002
+  Mixin::Event::Dispatch: 1.000
   Module::Load: 0
+  POSIX::strptime: 0
   Parser::MGC: 0.10
-  Template: 2.18
+  Template: 2.24
+  Tie::Cache::LRU: 0
+  Tie::Hash::LRU: 0
+  Try::Tiny: 0
   XML::XPath: 1.00
+  curry: 1.000
 resources:
   bugtracker: http://rt.cpan.org/Public/Dist/Display.html?Name=EntityModel
   homepage: http://search.cpan.org/dist/EntityModel/
-version: 0.017
+version: 0.100

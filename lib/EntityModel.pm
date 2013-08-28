@@ -2,18 +2,19 @@ package EntityModel;
 # ABSTRACT: Cross-language event-driven ORM
 
 use EntityModel::Class {
-	_isa		=> [qw(EntityModel::Model)],
-	name		=> { type => 'string' },
-	plugin		=> { type => 'array', subclass => 'EntityModel::Plugin' },
-	support		=> { type => 'array', subclass => 'EntityModel::Support' },
-	storage		=> { type => 'array', subclass => 'EntityModel::Storage' },
-	storage_queued	=> { type => 'array', subclass => 'EntityModel::Storage' },
-	cache		=> { type => 'array', subclass => 'EntityModel::Cache' },
-	cache_queued	=> { type => 'array', subclass => 'EntityModel::Cache' },
-	db		=> { type => 'EntityModel::DB' },
+	_isa => [qw(EntityModel::Model)],
+	name => { type => 'string' },
+	plugin => { type => 'array', subclass => 'EntityModel::Plugin' },
+	support => { type => 'array', subclass => 'EntityModel::Support' },
+	storage => { type => 'array', subclass => 'EntityModel::Storage' },
+	storage_queued => { type => 'array', subclass => 'EntityModel::Storage' },
+	cache => { type => 'array', subclass => 'EntityModel::Cache' },
+	cache_queued => { type => 'array', subclass => 'EntityModel::Cache' },
+	db => { type => 'EntityModel::DB' },
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
-our $VERSION = '0.017';
+our $VERSION = '0.100';
 
 =head1 NAME
 
@@ -21,7 +22,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -91,6 +92,18 @@ Typically run without options:
 
  my $model = EntityModel->new;
 
+The exciting things happen elsewhere. See:
+
+=over 4
+
+=item * L</load_from>
+
+=item * L</add_storage>
+
+=item * L</add_plugin>
+
+=back
+
 =cut
 
 sub new {
@@ -107,10 +120,9 @@ sub new {
 
 	my $self = bless { }, $class;
 
-# Apply plugins and options
+	# Apply plugins and options
 	while(@def) {
-		my $k = shift(@def);
-		my $v = shift(@def);
+		my ($k, $v) = splice @def, 0, 2;
 		$self->load_plugin($k => $v);
 	}
 
@@ -441,6 +453,20 @@ sub defer {
 
 }
 
+{
+my $model;
+sub default_model {
+	my $class = shift;
+	if(@_) {
+		my $old_model = $model;
+		$model = shift;
+		return $old_model;
+	}
+	$model ||= EntityModel->new;
+	return $model
+}
+}
+
 =head2 DESTROY
 
 Unload all plugins on exit.
@@ -521,7 +547,7 @@ for more details on this.
 
 An entity model can be loaded from several sources. If you have a database definition:
 
- create table test ( id int, name varchar(255) );
+ create table test ( id int, name varchar(255), url text );
 
 then loading the SQL plugin with the database name will create a single entity holding
 two fields.
@@ -809,7 +835,23 @@ systems described in the next section could be adapted to support the above requ
 
 =head1 SEE ALSO
 
-There are plenty of other, better ORM implementations available on CPAN - these are the ones I've found so far:
+There are plenty of other ORM implementations available on CPAN, one of which may be more suited to your
+needs than this is. These are the ones I've found so far:
+
+=head2 Asynchronous ORMs
+
+The list here is sadly lacking:
+
+=over 4
+
+=item * L<Async::ORM|https://github.com/vti/async-orm> - asynchronous ORM, see also article in L<http://showmetheco.de/articles/2010/1/mojolicious-async-orm-and-dbslayer.html>
+
+=back
+
+=head2 Synchronous ORMs
+
+If you're happy for the database to tie up your process for an indefinite amount of time, you're in
+luck - there's a nice long list of modules to choose from here:
 
 =over 4
 
@@ -851,21 +893,47 @@ backends, uses tied hashes and arrays
 
 =item * L<ObjectDB> - another lightweight ORM, currently has only L<DBI> as a dependency
 
-=item * L<https://github.com/vti/async-orm|Async::ORM> - asynchronous ORM, see also article in L<http://showmetheco.de/articles/2010/1/mojolicious-async-orm-and-dbslayer.html>
-
 =item * L<ORM> - looks like it has support for MySQL, PostgreSQL and SQLite
 
 =item * L<fytwORM> - described as a "bare minimum ORM used for prototyping / proof of concepts"
 
 =item * L<DBR> - Database Repository ORM
 
-=item * L<SweetPea::Application::Orm> - specific to L<SweetPea>
+=item * L<SweetPea::Application::Orm> - specific to the L<SweetPea> web framework
 
 =item * L<Jorge> - ORM Made simple
 
+=item * L<Persistence::ORM> - looks like a combination between persistent Perl objects and standard ORM
+
+=item * L<Teng> - lightweight minimal ORM
+
+=item * L<Class::orMapper> - DBI-based "easy O/R Mapper"
+
+=item * L<UR|https://github.com/genome/UR> - class framework and object/relational mapper (ORM) for Perl
+
+=item * L<DBIx::NinjaORM> - "Flexible Perl ORM for easy transitions from inline SQL to objects"
+
+=item * L<DBIx::Oro> - Simple Relational Database Accessor
+
+=item * L<LittleORM> - Moose-based ORM
+
+=item * L<Storm> - another Moose-based ORM
+
+=item * L<DBIx::Mint> - "A mostly class-based ORM for Perl"
+
+=back
+
+=head2 Database interaction
+
+=over 4
+
 =item * L<DBI::Easy> - seems to be a wrapper around L<DBI>
 
-=item * L<Persistence::ORM> - looks like a combination between persistent Perl objects and standard ORM
+=item * L<AnyData> - interface between L<DBI> and arbitrary data sources such as XML or HTML
+
+=item * L<DBIx::ThinSQL> - helpers for SQL statements
+
+=item * L<DB::Evented> - event-based wrapper for L<DBI>-like behaviour, uses L<AnyEvent::DBI>
 
 =back
 
@@ -873,7 +941,7 @@ Since this is Perl, there are probably many more, if you have something which is
 description of any of the existing entries), please raise via RT or email.
 
 Distributions which provide class structure and wrappers around the Perl OO mechanism are likewise covered by
-several other CPAN modules, with the clear winner here in the form of L<Moose> and derivatives.
+several other CPAN modules, with the clear winner here in the forms of L<Moose>, L<Moo> and derivatives.
 
 Eventually I'll try to put up a better set of comparisons on L<http://entitymodel.com>.
 
@@ -883,4 +951,4 @@ Tom Molesworth <cpan@entitymodel.com>
 
 =head1 LICENSE
 
-Copyright Tom Molesworth 2008-2012. Licensed under the same terms as Perl itself.
+Copyright Tom Molesworth 2008-2013. Licensed under the same terms as Perl itself.

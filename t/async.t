@@ -1,11 +1,15 @@
 use strict;
 use warnings;
-use Test::More skip_all => 'disabled to avoid pulling in IO::Async as a dep for now';
+use Test::More;
+BEGIN {
+	plan skip_all => 'no IO::Async' unless eval { require IO::Async::Loop };
+	plan skip_all => 'i broke it';
+}
+
 use Test::Deep;
 use EntityModel;
 use EntityModel::Async;
 use Async::MergePoint;
-use IO::Async::Loop;
 
 # Set up an EntityModel from a Perl hash
 my $loop;

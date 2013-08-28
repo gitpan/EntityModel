@@ -1,6 +1,6 @@
 package EntityModel::Query;
 {
-  $EntityModel::Query::VERSION = '0.017';
+  $EntityModel::Query::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Query::Base}],
@@ -18,6 +18,7 @@ use EntityModel::Class {
 	'db'		=> { type => 'EntityModel::DB', scope => 'private' },
 	'transaction'	=> { type => 'EntityModel::Transaction', scope => 'private' },
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -25,7 +26,7 @@ EntityModel::Query - handle SQL queries
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

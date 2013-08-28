@@ -1,6 +1,6 @@
 package EntityModel::Query::ReturningField;
 {
-  $EntityModel::Query::ReturningField::VERSION = '0.017';
+  $EntityModel::Query::ReturningField::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa => [qw(EntityModel::Query::Field)],
@@ -12,7 +12,7 @@ EntityModel::Query::ReturningField - fields returned by a statement
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

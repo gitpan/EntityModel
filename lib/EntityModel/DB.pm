@@ -1,6 +1,6 @@
 package EntityModel::DB;
 {
-  $EntityModel::DB::VERSION = '0.017';
+  $EntityModel::DB::VERSION = '0.100';
 }
 # ABSTRACT: Database manager for entity handling
 use EntityModel::Class {
@@ -13,6 +13,7 @@ use EntityModel::Class {
 	pid			=> { type => 'int' },
 	transactionLevel	=> { type => 'int', default => 0 },
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -20,7 +21,7 @@ EntityModel::DB - database management
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 DESCRIPTION
 

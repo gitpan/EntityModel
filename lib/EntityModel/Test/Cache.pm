@@ -1,6 +1,6 @@
 package EntityModel::Test::Cache;
 {
-  $EntityModel::Test::Cache::VERSION = '0.017';
+  $EntityModel::Test::Cache::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa	=> [qw(Exporter)],
@@ -12,7 +12,7 @@ EntityModel::Test::Cache - tests for L<EntityModel::Cache> and subclasses
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

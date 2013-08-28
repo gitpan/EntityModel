@@ -1,8 +1,9 @@
 package EntityModel::Query::Base;
 {
-  $EntityModel::Query::Base::VERSION = '0.017';
+  $EntityModel::Query::Base::VERSION = '0.100';
 }
 use EntityModel::Class;
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -10,7 +11,7 @@ EntityModel::Query::Base - base class for L<EntityModel::Query>-derived componen
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

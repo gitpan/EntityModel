@@ -1,3 +1,36 @@
+0.100     2013-08-28 23:01:14 Europe/London
+	EntityModel::Entity
+	* The ->new method has been expanded to accept a full entity definition
+	* New ->keyfield for key-value storage types
+	* Stringifies to entity:$name
+
+	EntityModel::Field
+	* Stringifies to field:$name
+
+	EntityModel::Resolver
+	* New class for providing helper functions for gathering values, might be renamed
+	in future so don't get too comfortable
+
+	Test::EntityModel
+	* Helper module for setting up models and other common functions
+
+	General:
+	* ->find can now be run without parameters to return all objects. Not sure how advisable this
+	is but presumably the caller knows what they're doing.
+	* Fix loading JSON from file.
+	* Automatically register plugins on load.
+	* "Default" model support for classes such as EntityModel::Resolver
+	* Drop DateTime::Format::Duration, seems to use $& in a croak statement and since we only use
+	this as a helper module there's no great benefit in keeping it around.
+
+	Bug fixes:
+	* Fixes for hash ordering and smartmatch removal for building on perl-5.18, should close RT82151
+	(thanks to Andreas J. König for reporting).
+
+	Documentation:
+	* Yet more ORMs for the list
+	* Sort out field names in example, thanks to Terrence Brannon for reporting this (a long time ago!)
+
 0.017     2012-06-10 16:27:04 Europe/London
 	Minor release to update EntityModel::Class dependency.
 	Also added more ORMs to the "see also" section.

@@ -1,6 +1,6 @@
 package EntityModel::Support::Perl;
 {
-  $EntityModel::Support::Perl::VERSION = '0.017';
+  $EntityModel::Support::Perl::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Support}],
@@ -8,6 +8,7 @@ use EntityModel::Class {
 	baseclass	=> { type => 'string' },
 	model		=> { type => 'EntityModel::Model' },
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -15,7 +16,7 @@ EntityModel::Support::Perl - language support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -28,12 +29,16 @@ See L<EntityModel>.
 
 =head1 ASYNCHRONOUS MODE
 
+See L<EntityModel::Support::PerlAsync>.
+
 =head1 METHODS
 
 =cut
 
 use Symbol ();
 use Module::Load ();
+use Scalar::Util ();
+use POSIX ();
 
 =head2 setup
 
@@ -75,9 +80,9 @@ sub apply_entity {
 	die qq{Too many references to handle\nThis module currently only handles 1:1, 1:N and N:M,\nso an entity with more than 3 external references\nneeds to have the relationships specified explicitly.} if @ref > 2;
 
 # Create a back collection for each reference
-	foreach (@ref) {
-		my $r = $_->refer->entity;
-		my $f = $r->field_map->{$_->refer->field} or die "no field found";
+	foreach my $ref (@ref) {
+		my $r = $ref->refer->entity;
+		my $f = $r->field_map->{$ref->refer->field} or die "no field found";
 		$self->back_link(
 			src => {
 				entity	=> $r,
@@ -85,7 +90,7 @@ sub apply_entity {
 			},
 			dst => {
 				entity	=> $entity,
-				field	=> $_
+				field	=> $ref
 			}
 		);
 	}
@@ -121,7 +126,9 @@ sub back_link {
 		EntityModel::Array->new([ $target->find({ $search_field => $self->id }) ]);
 	};
 	my $sym = join('::', $pkg, $method);
-	{ no strict 'refs'; *$sym = $code unless eval { $pkg->can($sym) }; }
+	my $exists = eval { $pkg->can($sym) };
+	{ no strict 'refs'; *$sym = $code unless $exists; }
+	logDebug("Created [%s] for [%s] as a back link, previous [%s]", $sym, $pkg, $exists // 'not found');
 	return $self;
 }
 
@@ -404,8 +411,12 @@ sub timestamp_accessor {
 		if(@_) {
 			my $v = shift;
 			if(defined $v) {
-				$v = DateTime->from_epoch(epoch => $v) if $v =~ /^\d+(?:\.\d+)?$/;
-				$v = sprintf("%s.%09d", $v->iso8601, $v->nanosecond) if eval { $v->isa('DateTime'); };
+				if(Scalar::Util::blessed($v) && $v->isa('DateTime')) {
+					$v = sprintf "%s.%09d", $v->iso8601, $v->nanosecond;
+				} else {
+					$v = POSIX::strftime('%Y-%m-%dT%H:%M:%S', gmtime $v) if $v =~ /^\d+(\.\d*)?$/;
+					$v .= substr sprintf('%11.9f', $1), 1 if $1;
+				}
 			}
 			$self->{ $keyName } = $v;
 			$self->{ _update_required } = 1;

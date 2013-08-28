@@ -1,11 +1,12 @@
 package EntityModel::Query::InsertField;
 {
-  $EntityModel::Query::InsertField::VERSION = '0.017';
+  $EntityModel::Query::InsertField::VERSION = '0.100';
 }
 use EntityModel::Class {
 	'_isa' => [qw(EntityModel::Query::Field)],
 	'value' => 'string',
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -13,7 +14,7 @@ EntityModel::Query::InsertField - field list for INSERT statement
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

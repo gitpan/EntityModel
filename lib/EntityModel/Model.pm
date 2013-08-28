@@ -1,6 +1,6 @@
 package EntityModel::Model;
 {
-  $EntityModel::Model::VERSION = '0.017';
+  $EntityModel::Model::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa		=> [qw{Mixin::Event::Dispatch}],
@@ -12,6 +12,7 @@ use EntityModel::Class {
 		entity => 'name'
 	} },
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -19,7 +20,7 @@ EntityModel::Model - base class for model definitions
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -101,7 +102,7 @@ sub apply_fields {
 	my @fieldList = $self->read_fields($entity);
 	foreach my $details (@fieldList) {
 		my $field = $entity->new_field($details->{name});
-		foreach (keys %$details) {
+		foreach (sort keys %$details) {
 			$field->$_($details->{$_});
 		}
 		$entity->field->push($field);
@@ -155,7 +156,7 @@ sub update_from {
 			$self->{pending}->{remove}->{$e->name} = $e;
 		}
 	}
-	foreach my $name (keys %srcNames) {
+	foreach my $name (sort keys %srcNames) {
 		logDebug("Should add [%s]", $name);
 		$self->{pending}->{add}->{$name} = $srcNames{$name};
 	}
@@ -222,6 +223,27 @@ sub new_entity {
 
 	my $entity = EntityModel::Entity->new($name);
 	return $entity;
+}
+
+=head2 create_entity
+
+Helper method to create a new entity and add it to our list.
+
+Takes the following parameters:
+
+=over 4
+
+=item *
+
+=back
+
+Returns
+
+=cut
+
+sub create_entity {
+	my $self = shift;
+	$self->add_entity(EntityModel::Entity->new(@_))
 }
 
 =head2 add_table
@@ -345,6 +367,8 @@ sub commit_pending_add {
 	}
 	return $self;
 }
+
+sub remove_entity { shift->remove_table(@_) }
 
 sub remove_table {
 	my $self = shift;

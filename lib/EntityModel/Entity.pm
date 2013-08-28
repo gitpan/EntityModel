@@ -1,6 +1,6 @@
 package EntityModel::Entity;
 {
-  $EntityModel::Entity::VERSION = '0.017';
+  $EntityModel::Entity::VERSION = '0.100';
 }
 use EntityModel::Class {
 	name		=> { type => 'string' },
@@ -8,10 +8,14 @@ use EntityModel::Class {
 	type		=> { type => 'string' },
 	description	=> { type => 'string' },
 	primary		=> { type => 'string' },
+	keyfield	=> { type => 'EntityModel::Field' },
 	constraint	=> { type => 'array', subclass => 'EntityModel::Entity::Constraint' },
 	field		=> { type => 'array', subclass => 'EntityModel::Field' },
 	field_map	=> { type => 'hash', scope => 'private', watch => { field => 'name' } },
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
+
+use overload '""' => sub { 'entity:' . shift->name }, fallback => 1;
 
 =head1 NAME
 
@@ -19,7 +23,7 @@ EntityModel::Entity - entity definition for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -39,10 +43,64 @@ Creates a new entity with the given name.
 
 =cut
 
-sub new {
+sub new_from_name {
 	my $class = shift;
 	my $name = shift;
 	return bless { name => $name }, $class;
+}
+
+=head2 new
+
+Instantiates a new object.
+
+Takes the following parameters:
+
+=over 4
+
+=item * name - the name to apply to this entity
+
+=item * field - an arrayref defining the field structure, see L<EntityModel::Field/new> for
+more information on the expected format here.
+
+=item * primary - which field(s) to use as the primary key, as a string or arrayref
+
+=item * auto_primary (optional) - automatically create an appropriate
+primary key and sequence
+
+=item * type (optional) - type information, currently unused
+
+=back
+
+Returns the new instance
+
+For backwards-compatibility reasons, when called with a single parameter
+this will have the same effect as the L</new_from_name> method.
+Use of this interface is strongly discouraged in new code, since it is
+likely to be deprecated in the near future.
+
+=cut
+
+sub new {
+	my $class = shift;
+	# Support the deprecated ->new('name') interface
+	return $class->new_from_name(@_) if @_ == 1;
+
+	my %args = @_;
+	my $self = bless { }, $class;
+
+	$self->name(delete $args{name});
+	my @fields = @{delete $args{field} || []};
+	my $primary = delete $args{primary};
+	if($args{auto_primary}) {
+		unshift @fields, {
+			name => $primary = 'id' . $self->name,
+			type => 'bigserial',
+		};
+	}
+	$self->add_field(EntityModel::Field->new(%$_)) for @fields;
+	$self->primary($primary);
+	$self->keyfield(delete $args{keyfield}) if exists $args{keyfield};
+	$self
 }
 
 =head2 new_field
@@ -142,6 +200,18 @@ sub add_field {
 	$self->field->push($field);
 	return $self;
 }
+
+=head2 field_by_name
+
+Returns the L<EntityModel::Field> matching the given name.
+
+Takes $name as a single parameter.
+
+Returns undef if not found.
+
+=cut
+
+sub field_by_name { my $self = shift; my $name = shift; shift->field_map->{$name} }
 
 1;
 

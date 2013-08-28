@@ -1,10 +1,11 @@
 package EntityModel::Definition;
 {
-  $EntityModel::Definition::VERSION = '0.017';
+  $EntityModel::Definition::VERSION = '0.100';
 }
 use EntityModel::Class {
 	model => { type => 'EntityModel::Model' },
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -12,7 +13,7 @@ EntityModel::Definition - definition support for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -43,7 +44,7 @@ sub load {
 	} elsif(ref $src ~~ 'ARRAY') {
 		($k, $v) = @$src;
 	} else {
-		$k = shift;
+		$k = $src;
 	}
 	logDebug("Trying [%s] as [%s] => [%s]", $self, $k, $v);
 	die 'Nothing passed' unless defined $k;
@@ -164,7 +165,7 @@ sub apply_model_from_structure {
 			definition => $_
 		) foreach @$entity;
 	}
-	foreach my $k (keys %$definition) {
+	foreach my $k (sort keys %$definition) {
 		$model->handle_item(
 			item	=> $k,
 			data	=> $definition->{$k}

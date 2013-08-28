@@ -1,6 +1,6 @@
 package EntityModel::Field;
 {
-  $EntityModel::Field::VERSION = '0.017';
+  $EntityModel::Field::VERSION = '0.100';
 }
 use EntityModel::Class {
 	'name'		=> { type => 'string' },
@@ -15,13 +15,15 @@ use EntityModel::Class {
 	'refer'		=> { type => 'EntityModel::Field::Refer' },
 };
 
+use overload '""' => sub { 'field:' . shift->name }, fallback => 1;
+
 =head1 NAME
 
 EntityModel::Field - field definitions for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

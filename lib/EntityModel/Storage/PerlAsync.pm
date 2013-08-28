@@ -1,6 +1,6 @@
 package EntityModel::Storage::PerlAsync;
 {
-  $EntityModel::Storage::PerlAsync::VERSION = '0.017';
+  $EntityModel::Storage::PerlAsync::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa		=> [qw{EntityModel::Storage::Perl}],
@@ -13,7 +13,7 @@ EntityModel::Storage::PerlAsync - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -235,18 +235,18 @@ sub find {
 
 	$self->loop->later($self->sap(sub {
 		my $self = shift;
-		$self->SUPER::find(
-			%args,
-			(map { $_ => $self->sap(sub {
-				my $self = shift;
-				my $v = shift;
-				my $k = $_;
-				warn "call $self with $k => $v\n";
+
+		# Defer all the events
+		foreach my $k (grep /^on_/, keys %args) {
+			my $orig = $args{$k};
+			$args{$k} = $self->sap(sub {
+				my ($self, @param) = @_;
 				$self->loop->later(sub {
-					$args{$k}->($v);
+					$orig->(@param);
 				});
-			}) } grep /^on_/, keys %args),
-		);
+			});
+		}
+		$self->SUPER::find(%args);
 	}));
 	return $self;
 }

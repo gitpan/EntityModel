@@ -1,9 +1,10 @@
 package EntityModel::Support::Perl::Base;
 {
-  $EntityModel::Support::Perl::Base::VERSION = '0.017';
+  $EntityModel::Support::Perl::Base::VERSION = '0.100';
 }
 use EntityModel::Class {
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -11,7 +12,7 @@ EntityModel::Support::Perl::Base - base class for entity instances
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -64,8 +65,7 @@ These are handled by the L</_queue_task> and L</_attach_event> methods respectiv
 =cut
 
 use Time::HiRes qw{time};
-use DateTime;
-use DateTime::Format::Strptime;
+use POSIX::strptime ();
 use Tie::Cache::LRU;
 
 sub _supported_callbacks { qw(before_commit after_load on_not_found on_create) }
@@ -236,7 +236,7 @@ sub _spec_from_hashref {
 	my $class = shift;
 	my $spec = shift;
 	my %details;
-	foreach my $k (keys %$spec) {
+	foreach my $k (sort keys %$spec) {
 		if(ref $spec->{$k} && eval { $spec->{$k}->isa(__PACKAGE__) }) {
 			$details{"id$k"} = $spec->{$k}->id;
 		} else {
@@ -264,12 +264,12 @@ sub create {
 
 sub find {
 	my $class = shift;
-	my $args = shift;
+	my $args = shift || {};
 
 	my %spec = %$args;
 
 # Convert refs to IDs
-	foreach my $k (keys %spec) {
+	foreach my $k (sort keys %spec) {
 		$spec{"id$k"} = delete($spec{$k})->id if eval { $spec{$k}->isa(__PACKAGE__); };
 	}
 
@@ -543,16 +543,9 @@ sub _timeStamp {
 
 	my $ts;
 	if($self->{$fieldName} =~ m/^(\d+)-(\d+)-(\d+)[ T](\d+):(\d+):(\d+)(?:\.(\d{1,9}))?/) {
-		$ts = DateTime->new(
-			year		=> $1,
-			month		=> $2,
-			day		=> $3,
-			hour		=> $4,
-			minute		=> $5,
-			second		=> $6,
-			nanosecond	=> $7 ? ($7 . ('0' x (9 - length($7)))) : 0,
-			formatter	=> DateTime::Format::Strptime->new(pattern => '%Y-%m-%d %H:%M:%S.%3N')
-		);
+		(my $v = $self->{$fieldName}) =~ tr/ /T/;
+		$ts = gmtime POSIX::strptime($v, '%Y-%m-%sT%H:%M:%S');
+		$ts .= $1 if $v =~ /(\.\d+)$/;
 	}
 	$TimestampCache{$v} = $ts;
 	return $ts;

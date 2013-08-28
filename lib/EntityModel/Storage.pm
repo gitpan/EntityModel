@@ -1,12 +1,13 @@
 package EntityModel::Storage;
 {
-  $EntityModel::Storage::VERSION = '0.017';
+  $EntityModel::Storage::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa		=> [qw(Mixin::Event::Dispatch)],
 	entity		=> { type => 'array', subclass => 'EntityModel::Entity' },
 	transaction	=> { type => 'array', subclass => 'EntityModel::Transaction' },
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -14,7 +15,7 @@ EntityModel::Storage - backend storage interface for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

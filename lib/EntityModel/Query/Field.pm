@@ -1,6 +1,6 @@
 package EntityModel::Query::Field;
 {
-  $EntityModel::Query::Field::VERSION = '0.017';
+  $EntityModel::Query::Field::VERSION = '0.100';
 }
 use EntityModel::Class {
 	'_isa' => [qw(EntityModel::Query::Base)],
@@ -9,6 +9,7 @@ use EntityModel::Class {
 	'sql' => 'string',
 	'alias' => 'string',
 };
+no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
 =head1 NAME
 
@@ -16,7 +17,7 @@ EntityModel::Query::Field - field wrapper
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 

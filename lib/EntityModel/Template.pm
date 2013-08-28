@@ -1,6 +1,6 @@
 package EntityModel::Template;
 {
-  $EntityModel::Template::VERSION = '0.017';
+  $EntityModel::Template::VERSION = '0.100';
 }
 use EntityModel::Class {
 	include_path	=> { type => 'array', subclass => 'string' }
@@ -12,7 +12,7 @@ EntityModel::Template - template handling for L<EntityModel>
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
@@ -24,7 +24,7 @@ use Template;
 use Template::Stash;
 use File::Basename;
 use Tie::Cache::LRU;
-use DateTime::Format::Duration;
+use DateTime;
 use POSIX qw/floor/;
 
 tie my %LONG_DATE_HASH, 'Tie::Cache::LRU', 5000;
@@ -43,10 +43,10 @@ BEGIN {
 		return [ $hash ];
 	};
 # hashops since we have datetime object... in theory.
-	$Template::Stash::HASH_OPS->{ msDuration } = sub {
-		my $v = shift;
-		return DateTime::Format::Duration->new(pattern => '%H:%M:%S.%3N')->format_duration($v);
-	};
+	#$Template::Stash::HASH_OPS->{ msDuration } = sub {
+	#	my $v = shift;
+	#	return DateTime::Format::Duration->new(pattern => '%H:%M:%S.%3N')->format_duration($v);
+	#};
 	$Template::Stash::HASH_OPS->{ from_now } = sub {
 		my $v = shift;
 		return from_now($v);
@@ -141,14 +141,14 @@ sub new {
 					}
 				}, 1
 			],
-			as_duration => [
-				sub {
-					my ($context, @args) = @_;
-					return sub {
-						return as_duration(shift, @args);
-					}
-				}, 1
-			],
+			#as_duration => [
+			#	sub {
+			#		my ($context, @args) = @_;
+			#		return sub {
+			#			return as_duration(shift, @args);
+			#		}
+			#	}, 1
+			#],
 		},
 	);
 	#$cfg{CONTEXT} = new Template::Timer(%cfg) if EntityModel::Config::Debug;

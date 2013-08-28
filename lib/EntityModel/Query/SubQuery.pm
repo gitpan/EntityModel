@@ -1,6 +1,6 @@
 package EntityModel::Query::SubQuery;
 {
-  $EntityModel::Query::SubQuery::VERSION = '0.017';
+  $EntityModel::Query::SubQuery::VERSION = '0.100';
 }
 use EntityModel::Class {
 	_isa => [qw{EntityModel::Query}],
@@ -13,7 +13,7 @@ EntityModel::Query::SubQuery - subquery
 
 =head1 VERSION
 
-version 0.017
+version 0.100
 
 =head1 SYNOPSIS
 
