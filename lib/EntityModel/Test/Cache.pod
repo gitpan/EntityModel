@@ -14,7 +14,7 @@ EntityModel::Test::Cache - tests for L<EntityModel::Cache> and subclasses
 
 =head1 VERSION
 
-version 0.100
+version 0.101
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package EntityModel::Collection;
 {
-  $EntityModel::Collection::VERSION = '0.100';
+  $EntityModel::Collection::VERSION = '0.101';
 }
 use EntityModel::Class {
 	pending	=> 'int',
@@ -14,7 +14,7 @@ EntityModel::Collection - manage entity model definitions
 
 =head1 VERSION
 
-version 0.100
+version 0.101
 
 =head1 SYNOPSIS
 

@@ -1,6 +1,6 @@
 package EntityModel::StorageClass::KVStore::Layer::Memcached;
 {
-  $EntityModel::StorageClass::KVStore::Layer::Memcached::VERSION = '0.100';
+  $EntityModel::StorageClass::KVStore::Layer::Memcached::VERSION = '0.101';
 }
 use strict;
 use warnings;

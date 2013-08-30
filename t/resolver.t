@@ -29,7 +29,7 @@ use Test::Fatal;
 use Scalar::Util qw(looks_like_number);
 
 use IO::Async::Loop;
-use CPS::Future;
+use Future;
 use EntityModel;
 use EntityModel::Resolver;
 
@@ -49,7 +49,7 @@ ok($model->create_entity(
 is($model->entity->count, 2, 'have the two entities we expected');
 is($_->field->count, 2, 'have the two fields we expected for $_') for $model->entity->list;
 
-my $completion = CPS::Future->new;
+my $completion = Future->new;
 is(exception {
 	resolve {
 		first_entity => 'test',

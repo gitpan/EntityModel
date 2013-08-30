@@ -1,6 +1,6 @@
 package EntityModel::EntityCollection;
 {
-  $EntityModel::EntityCollection::VERSION = '0.100';
+  $EntityModel::EntityCollection::VERSION = '0.101';
 }
 use EntityModel::Class {
 	_isa => [qw(EntityModel::Collection)],
@@ -13,7 +13,7 @@ EntityModel::EntityCollection - deal with collections of entities
 
 =head1 VERSION
 
-version 0.100
+version 0.101
 
 =head1 SYNOPSIS
 

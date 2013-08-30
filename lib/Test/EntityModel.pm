@@ -1,6 +1,6 @@
 package Test::EntityModel;
 {
-  $Test::EntityModel::VERSION = '0.100';
+  $Test::EntityModel::VERSION = '0.101';
 }
 use EntityModel::Class {};
 use parent qw(Exporter);

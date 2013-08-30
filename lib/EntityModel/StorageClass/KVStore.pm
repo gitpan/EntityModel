@@ -1,6 +1,6 @@
 package EntityModel::StorageClass::KVStore;
 {
-  $EntityModel::StorageClass::KVStore::VERSION = '0.100';
+  $EntityModel::StorageClass::KVStore::VERSION = '0.101';
 }
 use strict;
 use warnings;

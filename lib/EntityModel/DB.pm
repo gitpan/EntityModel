@@ -1,6 +1,6 @@
 package EntityModel::DB;
 {
-  $EntityModel::DB::VERSION = '0.100';
+  $EntityModel::DB::VERSION = '0.101';
 }
 # ABSTRACT: Database manager for entity handling
 use EntityModel::Class {
@@ -21,7 +21,7 @@ EntityModel::DB - database management
 
 =head1 VERSION
 
-version 0.100
+version 0.101
 
 =head1 DESCRIPTION
 

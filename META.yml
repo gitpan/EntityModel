@@ -43,4 +43,4 @@ requires:
 resources:
   bugtracker: http://rt.cpan.org/Public/Dist/Display.html?Name=EntityModel
   homepage: http://search.cpan.org/dist/EntityModel/
-version: 0.100
+version: 0.101

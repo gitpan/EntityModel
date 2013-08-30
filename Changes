@@ -1,3 +1,9 @@
+0.101     2013-08-30 21:24:22 Europe/London
+	No functional changes.
+
+	Test fixes:
+	* Use Future rather than CPS::Future in the resolver.t test
+
 0.100     2013-08-28 23:01:14 Europe/London
 	EntityModel::Entity
 	* The ->new method has been expanded to accept a full entity definition

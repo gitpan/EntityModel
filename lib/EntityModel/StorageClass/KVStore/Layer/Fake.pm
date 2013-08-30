@@ -1,6 +1,6 @@
 package EntityModel::StorageClass::KVStore::Layer::Fake;
 {
-  $EntityModel::StorageClass::KVStore::Layer::Fake::VERSION = '0.100';
+  $EntityModel::StorageClass::KVStore::Layer::Fake::VERSION = '0.101';
 }
 use strict;
 use warnings;
