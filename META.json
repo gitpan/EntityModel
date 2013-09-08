@@ -33,12 +33,14 @@
       "runtime" : {
          "requires" : {
             "CPS" : "0",
+            "DateTime" : "0",
             "EntityModel::Class" : "0.012",
             "File::ShareDir" : "1.00",
             "Future" : "0.12",
             "IO::Async" : "0.50",
             "IO::Socket::IP" : "0",
             "JSON::XS" : "2.00",
+            "List::MoreUtils" : "0",
             "Mixin::Event::Dispatch" : "1.000",
             "Module::Load" : "0",
             "POSIX::strptime" : "0",
@@ -72,6 +74,6 @@
       },
       "homepage" : "http://search.cpan.org/dist/EntityModel/"
    },
-   "version" : "0.101"
+   "version" : "0.102"
 }
 

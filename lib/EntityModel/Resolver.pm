@@ -1,6 +1,6 @@
 package EntityModel::Resolver;
 {
-  $EntityModel::Resolver::VERSION = '0.101';
+  $EntityModel::Resolver::VERSION = '0.102';
 }
 use EntityModel::Class;
 

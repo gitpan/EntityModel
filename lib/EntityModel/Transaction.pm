@@ -1,6 +1,6 @@
 package EntityModel::Transaction;
 {
-  $EntityModel::Transaction::VERSION = '0.101';
+  $EntityModel::Transaction::VERSION = '0.102';
 }
 use EntityModel::Class;
 use overload '&{}' => sub {
@@ -15,7 +15,7 @@ EntityModel::Transaction - transaction co-ordinator
 
 =head1 VERSION
 
-version 0.101
+version 0.102
 
 =head1 SYNOPSIS
 

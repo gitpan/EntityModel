@@ -12,6 +12,8 @@ requires 'Tie::Hash::LRU', 0;
 requires 'POSIX::strptime', 0;
 requires 'Try::Tiny', 0;
 requires 'Tie::Cache::LRU', 0;
+requires 'DateTime', 0;
+requires 'List::MoreUtils', 0;
 requires 'CPS', 0;
 requires 'IO::Socket::IP', 0;
 requires 'IO::Async', '>= 0.50';

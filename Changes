@@ -1,3 +1,9 @@
+0.102     2013-09-08 18:13:54 Europe/London
+	No changes to features.
+
+	Dependency fixes:
+	* List::MoreUtils and DateTime were not included in cpanfile
+
 0.101     2013-08-30 21:24:22 Europe/London
 	No functional changes.
 

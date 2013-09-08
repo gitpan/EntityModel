@@ -14,7 +14,7 @@ EntityModel::Plugin - base class for plugin handling
 
 =head1 VERSION
 
-version 0.101
+version 0.102
 
 =head1 SYNOPSIS
 

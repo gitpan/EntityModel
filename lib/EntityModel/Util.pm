@@ -1,6 +1,6 @@
 package EntityModel::Util;
 {
-  $EntityModel::Util::VERSION = '0.101';
+  $EntityModel::Util::VERSION = '0.102';
 }
 use EntityModel::Class {};
 use parent qw(Exporter);
@@ -13,7 +13,7 @@ EntityModel::Util - helper functions for L<EntityModel>
 
 =head1 VERSION
 
-version 0.101
+version 0.102
 
 =head1 SYNOPSIS
 

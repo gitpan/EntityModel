@@ -1,6 +1,6 @@
 package EntityModel::StorageClass::KVStore::Layer::LRU;
 {
-  $EntityModel::StorageClass::KVStore::Layer::LRU::VERSION = '0.101';
+  $EntityModel::StorageClass::KVStore::Layer::LRU::VERSION = '0.102';
 }
 use parent qw(EntityModel::StorageClass::KVStore::Layer);
 use Tie::Hash::LRU;

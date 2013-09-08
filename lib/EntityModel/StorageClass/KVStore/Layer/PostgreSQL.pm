@@ -1,6 +1,6 @@
 package EntityModel::StorageClass::KVStore::Layer::PostgreSQL;
 {
-  $EntityModel::StorageClass::KVStore::Layer::PostgreSQL::VERSION = '0.101';
+  $EntityModel::StorageClass::KVStore::Layer::PostgreSQL::VERSION = '0.102';
 }
 use strict;
 use warnings;

@@ -14,7 +14,7 @@ use EntityModel::Class {
 };
 no if $] >= 5.017011, warnings => "experimental::smartmatch";
 
-our $VERSION = '0.101';
+our $VERSION = '0.102';
 
 =head1 NAME
 
@@ -22,7 +22,7 @@ EntityModel - manage entity model definitions
 
 =head1 VERSION
 
-version 0.101
+version 0.102
 
 =head1 SYNOPSIS
 

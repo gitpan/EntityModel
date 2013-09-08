@@ -1,6 +1,6 @@
 package EntityModel::StorageClass::KVStore::Mixin::Deferred;
 {
-  $EntityModel::StorageClass::KVStore::Mixin::Deferred::VERSION = '0.101';
+  $EntityModel::StorageClass::KVStore::Mixin::Deferred::VERSION = '0.102';
 }
 use strict;
 use warnings;

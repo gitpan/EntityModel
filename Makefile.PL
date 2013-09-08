@@ -27,12 +27,14 @@ my %WriteMakefileArgs = (
   "NAME" => "EntityModel",
   "PREREQ_PM" => {
     "CPS" => 0,
+    "DateTime" => 0,
     "EntityModel::Class" => "0.012",
     "File::ShareDir" => "1.00",
     "Future" => "0.12",
     "IO::Async" => "0.50",
     "IO::Socket::IP" => 0,
     "JSON::XS" => "2.00",
+    "List::MoreUtils" => 0,
     "Mixin::Event::Dispatch" => "1.000",
     "Module::Load" => 0,
     "POSIX::strptime" => 0,
@@ -54,7 +56,7 @@ my %WriteMakefileArgs = (
     "Test::Script" => "1.05",
     "blib" => 0
   },
-  "VERSION" => "0.101",
+  "VERSION" => "0.102",
   "test" => {
     "TESTS" => "t/*.t t/support/*.t"
   }
